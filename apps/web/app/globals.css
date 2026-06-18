@@ -94,6 +94,11 @@
 }
 
 @layer base {
+  /* Default any bare `border` utility to the Murmur hairline (shadcn convention). */
+  * {
+    border-color: var(--border);
+  }
+
   body {
     background-color: var(--bg);
     color: var(--fg);

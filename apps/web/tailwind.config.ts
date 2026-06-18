@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 /**
  * Murmur design-token mapping (MURMUR_UI.md §3). Colors, radii, fonts, shadows,
@@ -129,9 +130,23 @@ const config: Config = {
       ringColor: {
         DEFAULT: "var(--ring)",
       },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down var(--dur-2) var(--ease)",
+        "accordion-up": "accordion-up var(--dur-2) var(--ease)",
+      },
     },
   },
-  plugins: [],
+  plugins: [animate],
 };
 
 export default config;
