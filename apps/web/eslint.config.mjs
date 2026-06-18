@@ -11,6 +11,8 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Disable ESLint rules that conflict with Prettier formatting.
+  ...compat.extends("prettier"),
   {
     ignores: [
       "node_modules/**",
