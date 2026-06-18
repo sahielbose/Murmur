@@ -3,11 +3,100 @@
 @tailwind utilities;
 
 /*
- * Tailwind base config only. Murmur's design tokens (light + dark) and the
- * full theme mapping are introduced in Phase 2 — see MURMUR_UI.md §3.
+ * Murmur design tokens — monochrome editorial. Light is the default; `.dark`
+ * powers the app (the recorder looks great in dark). The optional indigo accent
+ * is defined but OFF by default — Murmur is pure black-and-white. See
+ * MURMUR_UI.md §3.
  */
+:root {
+  /* Surfaces */
+  --bg: #ffffff; /* page */
+  --bg-subtle: #f4f4f5; /* gray section bands */
+  --bg-elevated: #fafafa; /* cards on white */
+  --bg-inverse: #000000; /* hero / dark feature blocks */
+
+  /* Ink */
+  --fg: #0a0a0a; /* primary text */
+  --fg-strong: #000000; /* hero headlines / emphasis */
+  --fg-muted: #71717a; /* body-muted, labels */
+  --fg-subtle: #a1a1aa; /* captions, eyebrows */
+  --fg-inverse: #ffffff; /* text on black */
+  --fg-inverse-muted: #a1a1aa; /* muted text on black */
+
+  /* Lines */
+  --border: #e4e4e7; /* hairlines */
+  --border-strong: #d4d4d8;
+  --ring: #0a0a0a; /* focus ring (mono) */
+
+  /* Primary action = BLACK (pure B&W default) */
+  --primary: #0a0a0a;
+  --primary-hover: #262626;
+  --primary-fg: #ffffff;
+
+  /* Optional accent (OFF by default). Pocket-style periwinkle. */
+  --accent: #5b63e8;
+  --accent-hover: #4a52d6;
+  --accent-fg: #ffffff;
+
+  /* Feedback (kept muted / monochrome-friendly) */
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #d97706;
+
+  /* Recording */
+  --rec: #e5484d; /* the "live" dot / record state */
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-pill: 9999px;
+
+  /* Shadows (subtle — prefer borders) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.1);
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-1: 150ms;
+  --dur-2: 250ms;
+  --dur-3: 400ms;
+
+  /* Layout */
+  --container: 1200px; /* max content width */
+  --container-narrow: 760px;
+  --nav-h: 64px;
+}
+
+.dark {
+  --bg: #0a0a0a;
+  --bg-subtle: #161618;
+  --bg-elevated: #1c1c1f;
+  --bg-inverse: #ffffff;
+
+  --fg: #fafafa;
+  --fg-strong: #ffffff;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #71717a;
+  --fg-inverse: #0a0a0a;
+  --fg-inverse-muted: #52525b;
+
+  --border: #27272a;
+  --border-strong: #3f3f46;
+  --ring: #fafafa;
+
+  --primary: #fafafa; /* inverts: white button on dark */
+  --primary-hover: #e4e4e7;
+  --primary-fg: #0a0a0a;
+}
+
 @layer base {
   body {
+    background-color: var(--bg);
+    color: var(--fg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
