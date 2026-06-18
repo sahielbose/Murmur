@@ -1,20 +1,21 @@
+import { ThemeToggle } from "@/components/theme-toggle";
+
 export default function Home() {
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "grid",
-        placeItems: "center",
-        fontFamily: "system-ui, sans-serif",
-      }}
-    >
-      <div style={{ textAlign: "center" }}>
-        <h1 style={{ fontSize: "2rem", letterSpacing: "-0.02em", margin: 0 }}>
+    <main className="grid min-h-screen place-items-center bg-bg px-6 text-fg">
+      <div className="flex flex-col items-center text-center">
+        <span className="text-overline mb-6 text-[13px] font-medium uppercase tracking-[0.12em] text-fg-subtle">
+          Introducing Murmur
+        </span>
+        <h1 className="font-serif text-6xl font-bold tracking-[-0.03em] text-fg-strong">
           Murmur
         </h1>
-        <p style={{ color: "#71717A", marginTop: "0.5rem" }}>
+        <p className="mt-3 text-lg text-fg-muted">
           Remember every conversation.
         </p>
+        <div className="mt-8">
+          <ThemeToggle />
+        </div>
       </div>
     </main>
   );

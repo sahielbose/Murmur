@@ -15,7 +15,9 @@
     "@murmur/ai": "workspace:*",
     "@murmur/db": "workspace:*",
     "@murmur/jobs": "workspace:*",
+    "lucide-react": "^1.21.0",
     "next": "15.5.19",
+    "next-themes": "^0.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
