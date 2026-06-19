@@ -3,7 +3,9 @@ import {
   asc,
   desc,
   eq,
+  gte,
   isNull,
+  count,
   cosineDistance,
   getDb,
   askThreads,
@@ -16,6 +18,28 @@ import {
   type Citation,
 } from "@murmur/db";
 import { getEmbeddings } from "@murmur/ai";
+
+/** Free-tier daily Ask message cap (Pro is unlimited; MURMUR_CONTEXT.md §3.6). */
+export const FREE_ASK_DAILY_LIMIT = 10;
+
+/** Count a user's Ask questions sent today (for the free-tier limit). */
+export async function countTodaysAskMessages(userId: string): Promise<number> {
+  const db = getDb();
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const [row] = await db
+    .select({ n: count() })
+    .from(askMessages)
+    .innerJoin(askThreads, eq(askMessages.threadId, askThreads.id))
+    .where(
+      and(
+        eq(askThreads.userId, userId),
+        eq(askMessages.role, "user"),
+        gte(askMessages.createdAt, start),
+      ),
+    );
+  return row?.n ?? 0;
+}
 
 export type RetrievedChunk = {
   recordingId: string;

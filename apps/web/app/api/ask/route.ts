@@ -1,7 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getLlm } from "@murmur/ai";
 import { getDbUser } from "@/lib/current-user";
-import { addMessage, getOrCreateThread, retrieveContext } from "@/lib/ask";
+import {
+  addMessage,
+  countTodaysAskMessages,
+  FREE_ASK_DAILY_LIMIT,
+  getOrCreateThread,
+  retrieveContext,
+} from "@/lib/ask";
 
 type AskBody = {
   threadId?: string | null;
@@ -26,6 +32,16 @@ export async function POST(req: NextRequest) {
       { error: "question is required" },
       { status: 400 },
     );
+  }
+
+  if (user.plan === "free") {
+    const used = await countTodaysAskMessages(user.id);
+    if (used >= FREE_ASK_DAILY_LIMIT) {
+      return NextResponse.json(
+        { error: "daily_limit", limit: FREE_ASK_DAILY_LIMIT },
+        { status: 429 },
+      );
+    }
   }
 
   const thread = await getOrCreateThread(user.id, {
