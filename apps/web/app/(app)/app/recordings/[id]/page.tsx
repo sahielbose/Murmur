@@ -6,7 +6,9 @@ import {
   getRecordingForUser,
   getRecordingTags,
   getTranscript,
+  listRecordingsForUser,
 } from "@/lib/recordings";
+import { CombineButton } from "@/components/app/recording/combine-button";
 import { listTemplatesForUser } from "@/lib/templates";
 import { listTagsForUser } from "@/lib/tags";
 import { getActionItemsForRecording } from "@/lib/action-items";
@@ -40,6 +42,9 @@ export default async function RecordingDetailPage({
   if (!recording) notFound();
   const tags = await getRecordingTags(id);
   const allTags = await listTagsForUser(user.id);
+  const others = (await listRecordingsForUser(user.id)).filter(
+    (r) => r.id !== id && r.status === "done",
+  );
   const summary = await getPrimarySummary(id);
   const transcript = await getTranscript(id);
   const templates = await listTemplatesForUser(user.id);
@@ -68,7 +73,14 @@ export default async function RecordingDetailPage({
             color: t.color,
           }))}
         />
-        <div className="mt-6">
+        <div className="mt-4">
+          <CombineButton
+            recordingId={id}
+            recordingTitle={recording.title}
+            others={others.map((r) => ({ id: r.id, title: r.title }))}
+          />
+        </div>
+        <div className="mt-4">
           <AudioPlayerBar />
         </div>
         <div className="mt-8">
