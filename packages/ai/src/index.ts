@@ -4,3 +4,5 @@
  * real adapters are wired in Phases 18–20 and selected by env.
  */
 export * from "./stt/types";
+export * from "./llm/types";
+export * from "./embeddings/types";
