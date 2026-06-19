@@ -142,3 +142,63 @@ export async function listRecordingsForUser(
     .where(and(eq(recordings.userId, userId), isNull(recordings.deletedAt)))
     .orderBy(desc(recordings.recordedAt), desc(recordings.createdAt));
 }
+
+export type LibraryCard = {
+  id: string;
+  title: string;
+  status: string;
+  recordedAt: string | null;
+  durationSec: number | null;
+  snippet: string | null;
+  tags: { id: string; name: string; color: string }[];
+};
+
+/** Recordings with a summary snippet and tags for the library grid. */
+export async function listLibrary(userId: string): Promise<LibraryCard[]> {
+  const db = getDb();
+  const rows = await db
+    .select({ rec: recordings, snippet: summaries.contentMd })
+    .from(recordings)
+    .leftJoin(
+      summaries,
+      and(
+        eq(summaries.recordingId, recordings.id),
+        eq(summaries.isPrimary, true),
+      ),
+    )
+    .where(and(eq(recordings.userId, userId), isNull(recordings.deletedAt)))
+    .orderBy(desc(recordings.recordedAt), desc(recordings.createdAt));
+
+  const tagRows = await db
+    .select({ recordingId: recordingTags.recordingId, tag: tags })
+    .from(recordingTags)
+    .innerJoin(tags, eq(recordingTags.tagId, tags.id))
+    .where(eq(tags.userId, userId));
+
+  const tagsByRecording = new Map<
+    string,
+    { id: string; name: string; color: string }[]
+  >();
+  for (const { recordingId, tag } of tagRows) {
+    const list = tagsByRecording.get(recordingId) ?? [];
+    list.push({ id: tag.id, name: tag.name, color: tag.color });
+    tagsByRecording.set(recordingId, list);
+  }
+
+  return rows.map(({ rec, snippet }) => ({
+    id: rec.id,
+    title: rec.title,
+    status: rec.status,
+    recordedAt: rec.recordedAt?.toISOString() ?? null,
+    durationSec: rec.durationSec,
+    snippet: snippet
+      ? snippet
+          .replace(/^#{1,6}\s+/gm, "")
+          .replace(/[*_>`-]/g, "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 150)
+      : null,
+    tags: tagsByRecording.get(rec.id) ?? [],
+  }));
+}
