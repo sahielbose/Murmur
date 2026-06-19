@@ -2,6 +2,7 @@ import { inngest } from "../client";
 import type { RecordingCreatedData } from "../events";
 import {
   embedRecording,
+  failRecording,
   generateActionItems,
   generateMindMap,
   generateSummary,
@@ -21,6 +22,14 @@ export const processRecording = inngest.createFunction(
     name: "Process recording",
     retries: 3,
     triggers: [{ event: "recording.created" }],
+    // After all retries are exhausted, surface a user-visible failed status.
+    onFailure: async ({ error, event }) => {
+      const payload = event.data as { event?: { data?: RecordingCreatedData } };
+      const recordingId = payload.event?.data?.recordingId;
+      if (recordingId) {
+        await failRecording(recordingId, error.message || "Processing failed");
+      }
+    },
   },
   async ({ event, step }) => {
     const { recordingId } = event.data as RecordingCreatedData;
