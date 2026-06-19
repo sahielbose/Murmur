@@ -1,6 +1,10 @@
 import { inngest } from "../client";
 import type { RecordingCreatedData } from "../events";
-import { setStatus } from "../pipeline/steps";
+import {
+  persistTranscript,
+  setStatus,
+  transcribeRecording,
+} from "../pipeline/steps";
 
 /**
  * The recording-processing pipeline (MURMUR_CONTEXT.md §7). Skeleton with status
@@ -21,7 +25,12 @@ export const processRecording = inngest.createFunction(
       setStatus(recordingId, "transcribing"),
     );
 
-    // transcribe + persist segments/speakers → commit 3
+    const transcript = await step.run("transcribe", () =>
+      transcribeRecording(recordingId),
+    );
+    await step.run("persist-transcript", () =>
+      persistTranscript(recordingId, transcript),
+    );
 
     await step.run("set-summarizing", () =>
       setStatus(recordingId, "summarizing"),
