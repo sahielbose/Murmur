@@ -10,10 +10,12 @@ import {
   recordingSpeakers,
   transcriptSegments,
   summaries,
+  mindMaps,
   tags,
   type Recording,
   type Summary,
   type Tag,
+  type MindMapGraph,
 } from "@murmur/db";
 
 import type { TranscriptResult } from "@murmur/ai";
@@ -93,6 +95,19 @@ export async function getTranscript(
     )
     .where(eq(transcriptSegments.recordingId, recordingId))
     .orderBy(asc(transcriptSegments.startMs));
+}
+
+export async function getMindMap(
+  recordingId: string,
+): Promise<MindMapGraph | null> {
+  const db = getDb();
+  const [m] = await db
+    .select()
+    .from(mindMaps)
+    .where(eq(mindMaps.recordingId, recordingId))
+    .orderBy(desc(mindMaps.createdAt))
+    .limit(1);
+  return m?.graph ?? null;
 }
 
 /** Build a TranscriptResult from the persisted segments (for regeneration). */
