@@ -22,6 +22,9 @@ export function RecordOrb({
 }) {
   const reduce = useReducedMotion();
   const active = state === "recording";
+  // Paused also stops/saves on click, so it reads as a stop affordance even
+  // though only "recording" gets the breathing pulse.
+  const stopAffordance = state === "recording" || state === "paused";
 
   return (
     <div className="relative flex h-48 w-48 items-center justify-center">
@@ -39,8 +42,8 @@ export function RecordOrb({
         type="button"
         onClick={onClick}
         disabled={disabled}
-        aria-pressed={active}
-        aria-label={active ? "Stop recording" : "Start recording"}
+        aria-pressed={stopAffordance}
+        aria-label={stopAffordance ? "Stop recording" : "Start recording"}
         animate={active && !reduce ? { scale: [1, 1.04, 1] } : { scale: 1 }}
         transition={
           active && !reduce
@@ -57,7 +60,7 @@ export function RecordOrb({
               : "border-fg-strong bg-fg-strong text-fg-inverse hover:bg-fg",
         )}
       >
-        {active ? (
+        {stopAffordance ? (
           <Square className="h-9 w-9" fill="currentColor" />
         ) : (
           <Mic className="h-10 w-10" />

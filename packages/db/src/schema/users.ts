@@ -9,6 +9,8 @@ export type UserSettings = {
   integrations?: Record<string, unknown>;
   /** ISO timestamp the user acknowledged the recording-consent notice. */
   consentAcknowledgedAt?: string;
+  /** Whether the user confirmed everyone present knew they were recorded. */
+  consentOthersInformed?: boolean;
 };
 
 export const users = pgTable("users", {

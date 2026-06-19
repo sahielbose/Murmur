@@ -128,10 +128,12 @@ export function UploadDropzone() {
     (e: React.DragEvent) => {
       e.preventDefault();
       setDragging(false);
+      // Ignore drops while an upload is in flight (avoids racing two files).
+      if (status === "uploading" || status === "finalizing") return;
       const file = e.dataTransfer.files?.[0];
       if (file) void handleFile(file);
     },
-    [handleFile],
+    [handleFile, status],
   );
 
   const busy = status === "uploading" || status === "finalizing";
@@ -188,6 +190,8 @@ export function UploadDropzone() {
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
+            // Reset so re-selecting the same file after a failure re-fires.
+            e.target.value = "";
             if (file) void handleFile(file);
           }}
         />
