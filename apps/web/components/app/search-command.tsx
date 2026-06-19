@@ -42,6 +42,9 @@ export function SearchCommand() {
       setResults([]);
       return;
     }
+    // `active` invalidates an in-flight request when q changes, so a slower
+    // earlier response can't overwrite the latest query's results.
+    let active = true;
     const t = setTimeout(async () => {
       setLoading(true);
       try {
@@ -51,14 +54,17 @@ export function SearchCommand() {
           body: JSON.stringify({ q }),
         });
         const data = (await res.json()) as { results?: SearchResult[] };
-        setResults(data.results ?? []);
+        if (active) setResults(data.results ?? []);
       } catch {
-        setResults([]);
+        if (active) setResults([]);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     }, 250);
-    return () => clearTimeout(t);
+    return () => {
+      active = false;
+      clearTimeout(t);
+    };
   }, [q]);
 
   const go = (r: SearchResult) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Sparkles, ArrowUp, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,8 @@ export function AskChat({
   const [scopeId, setScopeId] = useState("all");
   const [sending, setSending] = useState(false);
   const [used, setUsed] = useState(usedToday);
+  // Guards selectThread against out-of-order responses on rapid switching.
+  const latestThreadRef = useRef<string | null>(null);
 
   const isFree = plan === "free";
   const limitReached = isFree && used >= dailyLimit;
@@ -65,6 +67,18 @@ export function AskChat({
             role: "assistant",
             content:
               "You've reached today's free limit for Ask. Upgrade to Pro for unlimited questions.",
+            citations: [],
+          },
+        ]);
+        return;
+      }
+      if (!res.ok) {
+        // Don't burn a free-tier question on a failed request.
+        setMessages((m) => [
+          ...m,
+          {
+            role: "assistant",
+            content: "Something went wrong answering that. Please try again.",
             citations: [],
           },
         ]);
@@ -111,19 +125,25 @@ export function AskChat({
 
   const selectThread = async (id: string) => {
     setActiveId(id);
+    setMessages([]);
+    latestThreadRef.current = id;
     try {
       const res = await fetch(`/api/ask/threads/${id}`);
+      // Ignore a response that arrived after the user switched threads again.
+      if (latestThreadRef.current !== id) return;
       if (res.ok) {
         const data = (await res.json()) as { messages: AskMessageData[] };
-        setMessages(data.messages);
+        if (latestThreadRef.current === id) setMessages(data.messages);
       }
     } catch {
-      setMessages([]);
+      /* keep the (now-empty) pane; user can reselect */
     }
   };
 
   const newChat = () => {
+    latestThreadRef.current = null;
     setActiveId(null);
+    setScopeId("all");
     setMessages([]);
   };
 
