@@ -3,13 +3,66 @@ import {
   asc,
   desc,
   eq,
+  isNull,
+  cosineDistance,
   getDb,
   askThreads,
   askMessages,
+  embeddings,
+  recordings,
+  transcriptSegments,
   type AskThread,
   type AskMessage,
   type Citation,
 } from "@murmur/db";
+import { getEmbeddings } from "@murmur/ai";
+
+export type RetrievedChunk = {
+  recordingId: string;
+  recordingTitle: string;
+  startMs: number;
+  text: string;
+};
+
+/** Scoped semantic retrieval over pgvector (library-wide or one recording). */
+export async function retrieveContext(
+  userId: string,
+  question: string,
+  opts: { recordingId?: string | null } = {},
+  limit = 6,
+): Promise<RetrievedChunk[]> {
+  const db = getDb();
+  const queryVec = await getEmbeddings().embedOne(question);
+
+  const filters = [eq(embeddings.userId, userId), isNull(recordings.deletedAt)];
+  if (opts.recordingId) {
+    filters.push(eq(embeddings.recordingId, opts.recordingId));
+  }
+
+  const rows = await db
+    .select({
+      recordingId: embeddings.recordingId,
+      title: recordings.title,
+      chunkText: embeddings.chunkText,
+      startMs: transcriptSegments.startMs,
+    })
+    .from(embeddings)
+    .innerJoin(recordings, eq(embeddings.recordingId, recordings.id))
+    .leftJoin(
+      transcriptSegments,
+      eq(embeddings.segmentId, transcriptSegments.id),
+    )
+    .where(and(...filters))
+    .orderBy(cosineDistance(embeddings.embedding, queryVec))
+    .limit(limit);
+
+  return rows.map((r) => ({
+    recordingId: r.recordingId,
+    recordingTitle: r.title,
+    startMs: r.startMs ?? 0,
+    text: r.chunkText,
+  }));
+}
 
 export async function getOrCreateThread(
   userId: string,

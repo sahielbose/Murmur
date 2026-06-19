@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getDbUser } from "@/lib/current-user";
-import { addMessage, getOrCreateThread } from "@/lib/ask";
+import { addMessage, getOrCreateThread, retrieveContext } from "@/lib/ask";
 
 type AskBody = {
   threadId?: string | null;
@@ -35,12 +35,23 @@ export async function POST(req: NextRequest) {
   });
   await addMessage(thread.id, "user", question);
 
-  const answer = "I'm reading through your recordings…";
-  await addMessage(thread.id, "assistant", answer, []);
+  const context = await retrieveContext(user.id, question, {
+    recordingId: body.scope === "recording" ? body.scopeRecordingId : null,
+  });
+  const citations = context.slice(0, 3).map((c) => ({
+    recordingId: c.recordingId,
+    startMs: c.startMs,
+    label: c.recordingTitle,
+  }));
+
+  const answer = context.length
+    ? `From your recordings: ${context[0]!.text}`
+    : "I don't see that in your recordings.";
+  await addMessage(thread.id, "assistant", answer, citations);
 
   return NextResponse.json({
     threadId: thread.id,
     threadTitle: thread.title,
-    message: { content: answer, citations: [] },
+    message: { content: answer, citations },
   });
 }
