@@ -7,12 +7,22 @@ import {
   getDb,
   recordings,
   recordingTags,
+  recordingSpeakers,
+  transcriptSegments,
   summaries,
   tags,
   type Recording,
   type Summary,
   type Tag,
 } from "@murmur/db";
+
+export type TranscriptRow = {
+  id: string;
+  startMs: number;
+  endMs: number;
+  text: string;
+  speaker: string | null;
+};
 
 /** Fetch a non-deleted recording owned by the user. */
 export async function getRecordingForUser(
@@ -60,6 +70,27 @@ export async function getPrimarySummary(
     )
     .limit(1);
   return s;
+}
+
+export async function getTranscript(
+  recordingId: string,
+): Promise<TranscriptRow[]> {
+  const db = getDb();
+  return db
+    .select({
+      id: transcriptSegments.id,
+      startMs: transcriptSegments.startMs,
+      endMs: transcriptSegments.endMs,
+      text: transcriptSegments.text,
+      speaker: recordingSpeakers.displayName,
+    })
+    .from(transcriptSegments)
+    .leftJoin(
+      recordingSpeakers,
+      eq(transcriptSegments.recordingSpeakerId, recordingSpeakers.id),
+    )
+    .where(eq(transcriptSegments.recordingId, recordingId))
+    .orderBy(asc(transcriptSegments.startMs));
 }
 
 /** List a user's non-deleted recordings, newest first. */

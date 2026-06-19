@@ -4,8 +4,10 @@ import {
   getPrimarySummary,
   getRecordingForUser,
   getRecordingTags,
+  getTranscript,
 } from "@/lib/recordings";
 import { SummaryTab } from "@/components/app/recording/summary-tab";
+import { TranscriptTab } from "@/components/app/recording/transcript-tab";
 import { RecordingHeader } from "@/components/app/recording/recording-header";
 import { RecordingAudioProvider } from "@/components/app/recording/recording-audio-provider";
 import { AudioPlayerBar } from "@/components/app/recording/audio-player-bar";
@@ -27,6 +29,7 @@ export default async function RecordingDetailPage({
   if (!recording) notFound();
   const tags = await getRecordingTags(id);
   const summary = await getPrimarySummary(id);
+  const transcript = await getTranscript(id);
 
   return (
     <main className="flex-1 p-6 md:p-8">
@@ -63,9 +66,7 @@ export default async function RecordingDetailPage({
                 }
               />
             }
-            transcript={
-              <TabPlaceholder>Transcript appears here.</TabPlaceholder>
-            }
+            transcript={<TranscriptTab rows={transcript} />}
             actions={<TabPlaceholder>Action items appear here.</TabPlaceholder>}
             mindMap={<TabPlaceholder>Mind map appears here.</TabPlaceholder>}
           />
