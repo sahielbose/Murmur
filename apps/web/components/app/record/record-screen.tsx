@@ -2,6 +2,7 @@
 
 import { useAudioRecorder } from "./use-audio-recorder";
 import { RecordOrb } from "./record-orb";
+import { LiveWaveform } from "./live-waveform";
 
 /**
  * The live capture canvas (MURMUR_UI.md §10.2). Built up across Phase 8 — for
@@ -27,6 +28,7 @@ export function RecordScreen() {
         onClick={onToggle}
         disabled={rec.state === "requesting" || rec.state === "stopping"}
       />
+      <LiveWaveform stream={rec.stream} active={rec.state === "recording"} />
       <p className="text-sm text-fg-muted" aria-live="polite">
         {rec.state === "idle" && "Tap to start recording"}
         {rec.state === "requesting" && "Allow microphone access to start."}
