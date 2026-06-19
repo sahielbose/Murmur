@@ -116,6 +116,7 @@ export default async function RecordingDetailPage({
               transcript={<TranscriptTab recordingId={id} rows={transcript} />}
               actions={
                 <ActionItemsTab
+                  recordingTitle={recording.title}
                   items={items.map((it) => ({
                     id: it.id,
                     text: it.text,

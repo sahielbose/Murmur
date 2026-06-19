@@ -5,6 +5,8 @@ import type {
   AskInput,
   AskResult,
   ActionItemsResult,
+  DraftInput,
+  DraftResult,
   GenerationInput,
   LlmProvider,
   MindMapResult,
@@ -149,6 +151,39 @@ export const mockLlm: LlmProvider = {
         recordingId: s.c.recordingId,
         startMs: s.c.startMs,
       })),
+      model: MODEL,
+    };
+  },
+
+  async draft(input: DraftInput): Promise<DraftResult> {
+    void hashString(input.seed ?? input.commitment);
+    const commitment = input.commitment.trim().replace(/\.$/, "");
+    const lower = commitment.charAt(0).toLowerCase() + commitment.slice(1);
+    const recipient = input.recipient?.trim() || "there";
+    const source = input.recordingTitle
+      ? ` (from our conversation, "${input.recordingTitle}")`
+      : "";
+
+    if (input.kind === "message") {
+      return {
+        subject: null,
+        body: `Hi ${recipient} — quick follow-up${source}: I said I'd ${lower}. Wanted to flag it's on my list — I'll take care of it shortly. Anything you need from me first?`,
+        model: MODEL,
+      };
+    }
+
+    return {
+      subject: `Following up: ${commitment}`,
+      body: [
+        `Hi ${recipient},`,
+        "",
+        `Following up on something I committed to${source}: I said I'd ${lower}.`,
+        "",
+        `I'm picking it up now and will let you know once it's done. If anything has changed on your end, just reply here.`,
+        "",
+        "Best,",
+        "Alex",
+      ].join("\n"),
       model: MODEL,
     };
   },

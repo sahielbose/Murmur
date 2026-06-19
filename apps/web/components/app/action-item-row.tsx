@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/format";
+import { DraftFollowupButton } from "@/components/app/draft-followup-button";
 
 export type ActionItemData = {
   id: string;
@@ -18,9 +19,11 @@ export type ActionItemData = {
 export function ActionItemRow({
   item,
   onToggle,
+  recordingTitle,
 }: {
   item: ActionItemData;
   onToggle: (id: string, done: boolean) => void;
+  recordingTitle?: string;
 }) {
   const done = item.status === "done";
   return (
@@ -40,7 +43,7 @@ export function ActionItemRow({
       >
         {done ? <Check className="h-3.5 w-3.5" /> : null}
       </button>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p
           className={cn(
             "leading-snug text-fg",
@@ -65,6 +68,14 @@ export function ActionItemRow({
           </Link>
         ) : null}
       </div>
+      {!done ? (
+        <DraftFollowupButton
+          commitment={item.text}
+          recordingTitle={recordingTitle ?? item.recording?.title}
+          label="Draft"
+          className="shrink-0"
+        />
+      ) : null}
     </li>
   );
 }

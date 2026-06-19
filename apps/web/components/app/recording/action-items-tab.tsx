@@ -6,7 +6,13 @@ import {
   type ActionItemData,
 } from "@/components/app/action-item-row";
 
-export function ActionItemsTab({ items }: { items: ActionItemData[] }) {
+export function ActionItemsTab({
+  items,
+  recordingTitle,
+}: {
+  items: ActionItemData[];
+  recordingTitle?: string;
+}) {
   const [list, setList] = useState(items);
 
   const toggle = async (id: string, done: boolean) => {
@@ -33,7 +39,12 @@ export function ActionItemsTab({ items }: { items: ActionItemData[] }) {
   return (
     <ul className="divide-y divide-border py-2">
       {list.map((item) => (
-        <ActionItemRow key={item.id} item={item} onToggle={toggle} />
+        <ActionItemRow
+          key={item.id}
+          item={item}
+          onToggle={toggle}
+          recordingTitle={recordingTitle}
+        />
       ))}
     </ul>
   );

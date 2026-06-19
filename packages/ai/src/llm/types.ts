@@ -47,6 +47,24 @@ export type AskResult = {
   model: string;
 };
 
+export type DraftKind = "email" | "message";
+
+export type DraftInput = {
+  /** The commitment / action item to act on. */
+  commitment: string;
+  kind: DraftKind;
+  recordingTitle?: string;
+  recipient?: string;
+  seed?: string;
+};
+
+/** A generated draft. Always returned for review — never sent automatically. */
+export type DraftResult = {
+  subject: string | null;
+  body: string;
+  model: string;
+};
+
 /**
  * Text generation for summaries, action items, mind maps, and grounded Ask
  * (MURMUR_CONTEXT.md §8). Ask must never answer beyond the retrieved context.
@@ -57,4 +75,6 @@ export interface LlmProvider {
   extractActionItems(input: GenerationInput): Promise<ActionItemsResult>;
   mindMap(input: GenerationInput): Promise<MindMapResult>;
   ask(input: AskInput): Promise<AskResult>;
+  /** Draft a follow-up to review. Approval-gated — the caller never auto-sends. */
+  draft(input: DraftInput): Promise<DraftResult>;
 }

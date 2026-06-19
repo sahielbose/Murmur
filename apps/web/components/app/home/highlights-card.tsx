@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { RefreshCw, Sparkles, X } from "lucide-react";
 import type { DigestView } from "@/lib/resurfacing";
 import { Button } from "@/components/ui/button";
+import { DraftFollowupButton } from "@/components/app/draft-followup-button";
 
 export function HighlightsCard({ digest }: { digest: DigestView | null }) {
   const router = useRouter();
@@ -65,20 +66,26 @@ export function HighlightsCard({ digest }: { digest: DigestView | null }) {
       {data && data.items.length > 0 ? (
         <ul className="space-y-2">
           {data.items.map((item, i) => (
-            <li key={i}>
-              <Link
-                href={
-                  item.recordingId
-                    ? `/app/recordings/${item.recordingId}`
-                    : "/app/library"
-                }
-                className="block rounded-lg border border-border px-3 py-2.5 transition-colors hover:bg-bg-subtle"
-              >
-                <p className="text-sm text-fg">{item.text}</p>
-                <p className="mt-0.5 text-xs text-fg-subtle">
+            <li key={i} className="rounded-lg border border-border px-3 py-2.5">
+              <p className="text-sm text-fg">{item.text}</p>
+              <div className="mt-1 flex items-center gap-2">
+                <Link
+                  href={
+                    item.recordingId
+                      ? `/app/recordings/${item.recordingId}`
+                      : "/app/library"
+                  }
+                  className="text-xs text-fg-subtle underline-offset-2 hover:text-fg hover:underline"
+                >
                   from {item.recordingTitle}
-                </p>
-              </Link>
+                </Link>
+                <DraftFollowupButton
+                  commitment={item.text}
+                  recordingTitle={item.recordingTitle}
+                  label="Draft"
+                  className="ml-auto h-7"
+                />
+              </div>
             </li>
           ))}
         </ul>
