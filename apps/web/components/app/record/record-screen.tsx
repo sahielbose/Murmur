@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Pause, Play } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -14,18 +15,40 @@ import { useAudioRecorder } from "./use-audio-recorder";
 import { RecordOrb } from "./record-orb";
 import { LiveWaveform } from "./live-waveform";
 import { RecordTimer } from "./record-timer";
+import { ConsentBanner } from "./consent-banner";
 
 /**
  * The live capture canvas (MURMUR_UI.md §10.2). Orb + waveform + timer +
- * controls. Consent and the live transcript are added in the next commits.
+ * controls, gated by the one-time consent notice. The live transcript is added
+ * in the next commit.
  */
-export function RecordScreen() {
+export function RecordScreen({ consented = false }: { consented?: boolean }) {
   const rec = useAudioRecorder();
+  const [acknowledged, setAcknowledged] = useState(consented);
+  const [consentOpen, setConsentOpen] = useState(false);
   const isRecording = rec.state === "recording" || rec.state === "paused";
 
   const onToggle = () => {
-    if (isRecording) void rec.stop();
-    else void rec.start();
+    if (isRecording) {
+      void rec.stop();
+      return;
+    }
+    if (!acknowledged) {
+      setConsentOpen(true);
+      return;
+    }
+    void rec.start();
+  };
+
+  const onConsentConfirm = (othersInformed: boolean) => {
+    setConsentOpen(false);
+    setAcknowledged(true);
+    void fetch("/api/consent", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ othersInformed }),
+    }).catch(() => {});
+    void rec.start();
   };
 
   const orbState =
@@ -35,6 +58,12 @@ export function RecordScreen() {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 py-12">
+      <ConsentBanner
+        open={consentOpen}
+        onConfirm={onConsentConfirm}
+        onCancel={() => setConsentOpen(false)}
+      />
+
       {!isRecording && selectableDevices.length > 0 ? (
         <Select
           value={rec.deviceId ?? undefined}

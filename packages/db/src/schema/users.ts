@@ -7,6 +7,8 @@ export type UserSettings = {
   language?: string;
   model?: string;
   integrations?: Record<string, unknown>;
+  /** ISO timestamp the user acknowledged the recording-consent notice. */
+  consentAcknowledgedAt?: string;
 };
 
 export const users = pgTable("users", {
