@@ -66,6 +66,7 @@ export default async function RecordingDetailPage({
               summary={
                 <SummaryTab
                   recordingId={id}
+                  title={recording.title}
                   summary={
                     summary
                       ? {

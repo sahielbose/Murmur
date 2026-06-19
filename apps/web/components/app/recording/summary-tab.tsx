@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Wand2 } from "lucide-react";
+import { Download, Pencil, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Markdown } from "@/components/markdown";
@@ -13,6 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { downloadText, mdToPlainText, slugify } from "@/lib/export-text";
 
 export type SummaryData = {
   id: string;
@@ -25,10 +32,12 @@ export type TemplateOption = { id: string; name: string };
 
 export function SummaryTab({
   recordingId,
+  title,
   summary,
   templates,
 }: {
   recordingId: string;
+  title: string;
   summary: SummaryData | null;
   templates: TemplateOption[];
 }) {
@@ -115,17 +124,51 @@ export function SummaryTab({
           </Button>
         </div>
         {!editing ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setDraft(content);
-              setEditing(true);
-            }}
-          >
-            <Pencil className="h-4 w-4" />
-            Edit
-          </Button>
+          <div className="flex items-center gap-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Download className="h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onSelect={() =>
+                    downloadText(
+                      `${slugify(title)}.md`,
+                      content,
+                      "text/markdown",
+                    )
+                  }
+                >
+                  Markdown (.md)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() =>
+                    downloadText(
+                      `${slugify(title)}.txt`,
+                      mdToPlainText(content),
+                      "text/plain",
+                    )
+                  }
+                >
+                  Plain text (.txt)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setDraft(content);
+                setEditing(true);
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+              Edit
+            </Button>
+          </div>
         ) : null}
       </div>
 
