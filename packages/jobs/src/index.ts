@@ -9,6 +9,7 @@ import { processRecording } from "./functions/process-recording";
  */
 export { inngest };
 export { runPipeline } from "./pipeline/run";
+export { enqueueProcessing } from "./enqueue";
 export * from "./events";
 
 export const functions: InngestFunction.Any[] = [processRecording];
