@@ -1,8 +1,30 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { and, eq, getDb, recordings } from "@murmur/db";
 import { getDbUser } from "@/lib/current-user";
+import { getRecordingForUser } from "@/lib/recordings";
 
 type PatchBody = { title?: string };
+
+/** Lightweight status poll for the processing view. */
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const user = await getDbUser();
+  if (!user) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  const { id } = await params;
+  const rec = await getRecordingForUser(user.id, id);
+  if (!rec) {
+    return NextResponse.json({ error: "not found" }, { status: 404 });
+  }
+  return NextResponse.json({
+    id: rec.id,
+    status: rec.status,
+    error: rec.error,
+  });
+}
 
 /**
  * Update a recording (MURMUR_CONTEXT.md §9). Rename now; retag and set-primary

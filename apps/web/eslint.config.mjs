@@ -14,6 +14,16 @@ const eslintConfig = [
   // Disable ESLint rules that conflict with Prettier formatting.
   ...compat.extends("prettier"),
   {
+    rules: {
+      // Allow intentionally-unused args/vars prefixed with `_`
+      // (e.g. unused `_req` in route handlers that need `params`).
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
+  },
+  {
     ignores: [
       "node_modules/**",
       ".next/**",

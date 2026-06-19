@@ -6,6 +6,7 @@ import { Check, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDate, formatDuration } from "@/lib/format";
 import { TagPill, type TagLike } from "@/components/app/tag-pill";
+import { StatusPill } from "@/components/app/status-pill";
 
 export type HeaderRecording = {
   id: string;
@@ -89,6 +90,9 @@ export function RecordingHeader({
           "flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-fg-muted",
         )}
       >
+        {recording.status !== "done" ? (
+          <StatusPill status={recording.status} />
+        ) : null}
         {recording.recordedAt ? (
           <span>{formatDate(recording.recordedAt)}</span>
         ) : null}

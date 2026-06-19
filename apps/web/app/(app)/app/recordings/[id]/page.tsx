@@ -8,6 +8,10 @@ import {
 } from "@/lib/recordings";
 import { SummaryTab } from "@/components/app/recording/summary-tab";
 import { TranscriptTab } from "@/components/app/recording/transcript-tab";
+import {
+  FailedPanel,
+  ProcessingPanel,
+} from "@/components/app/recording/recording-status";
 import { RecordingHeader } from "@/components/app/recording/recording-header";
 import { RecordingAudioProvider } from "@/components/app/recording/recording-audio-provider";
 import { AudioPlayerBar } from "@/components/app/recording/audio-player-bar";
@@ -51,25 +55,33 @@ export default async function RecordingDetailPage({
           <AudioPlayerBar />
         </div>
         <div className="mt-8">
-          <RecordingTabs
-            summary={
-              <SummaryTab
-                recordingId={id}
-                summary={
-                  summary
-                    ? {
-                        id: summary.id,
-                        contentMd: summary.contentMd,
-                        style: summary.style,
-                      }
-                    : null
-                }
-              />
-            }
-            transcript={<TranscriptTab rows={transcript} />}
-            actions={<TabPlaceholder>Action items appear here.</TabPlaceholder>}
-            mindMap={<TabPlaceholder>Mind map appears here.</TabPlaceholder>}
-          />
+          {recording.status === "failed" ? (
+            <FailedPanel recordingId={id} error={recording.error} />
+          ) : recording.status !== "done" ? (
+            <ProcessingPanel recordingId={id} status={recording.status} />
+          ) : (
+            <RecordingTabs
+              summary={
+                <SummaryTab
+                  recordingId={id}
+                  summary={
+                    summary
+                      ? {
+                          id: summary.id,
+                          contentMd: summary.contentMd,
+                          style: summary.style,
+                        }
+                      : null
+                  }
+                />
+              }
+              transcript={<TranscriptTab rows={transcript} />}
+              actions={
+                <TabPlaceholder>Action items appear here.</TabPlaceholder>
+              }
+              mindMap={<TabPlaceholder>Mind map appears here.</TabPlaceholder>}
+            />
+          )}
         </div>
       </RecordingAudioProvider>
     </main>
