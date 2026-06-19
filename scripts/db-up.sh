@@ -21,7 +21,7 @@ else
     -e POSTGRES_USER=murmur \
     -e POSTGRES_PASSWORD=murmur \
     -e POSTGRES_DB=murmur \
-    -p 5432:5432 \
+    -p 55432:5432 \
     -v murmur-db-data:/var/lib/postgresql/data \
     -v "$ROOT/db/init:/docker-entrypoint-initdb.d:ro" \
     pgvector/pgvector:pg16

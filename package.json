@@ -13,6 +13,9 @@
     "format:check": "prettier --check .",
     "db:up": "sh scripts/db-up.sh",
     "db:down": "sh scripts/db-down.sh",
+    "db:generate": "pnpm --filter @murmur/db db:generate",
+    "db:migrate": "pnpm --filter @murmur/db db:migrate",
+    "db:seed": "pnpm --filter @murmur/db db:seed",
     "prepare": "husky"
   },
   "devDependencies": {
