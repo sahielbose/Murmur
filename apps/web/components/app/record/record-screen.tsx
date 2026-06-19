@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Pause, Play } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Pause, Play, Upload } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,27 +14,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAudioRecorder } from "./use-audio-recorder";
+import { uploadAudio } from "@/lib/upload-audio";
+import { useAudioRecorder, type RecorderError } from "./use-audio-recorder";
 import { RecordOrb } from "./record-orb";
 import { LiveWaveform } from "./live-waveform";
 import { RecordTimer } from "./record-timer";
 import { ConsentBanner } from "./consent-banner";
 import { LiveTranscript } from "./live-transcript";
 
+const ERROR_COPY: Record<RecorderError, string> = {
+  "permission-denied":
+    "Microphone access is blocked. Enable it in your browser's site settings, then try again.",
+  "no-device": "We couldn't find a microphone. Check your input device.",
+  unsupported:
+    "This browser doesn't support recording. You can upload an audio file instead.",
+  unknown: "Something went wrong starting the recording.",
+};
+
+function defaultTitle(): string {
+  const now = new Date();
+  return `Recording · ${now.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  })}`;
+}
+
 /**
  * The live capture canvas (MURMUR_UI.md §10.2). Orb + waveform + timer +
- * controls, gated by the one-time consent notice. The live transcript is added
- * in the next commit.
+ * controls + live transcript, gated by consent. On stop the audio is uploaded
+ * and the pipeline is enqueued; mic-permission errors fall back to Upload.
  */
 export function RecordScreen({ consented = false }: { consented?: boolean }) {
+  const router = useRouter();
   const rec = useAudioRecorder();
   const [acknowledged, setAcknowledged] = useState(consented);
   const [consentOpen, setConsentOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   const isRecording = rec.state === "recording" || rec.state === "paused";
+
+  const save = async () => {
+    const blob = await rec.stop();
+    if (!blob) return;
+    setSaving(true);
+    try {
+      const result = await uploadAudio(blob, {
+        filename: `recording-${Date.now()}.webm`,
+        title: defaultTitle(),
+        source: "mic",
+        contentType: blob.type,
+      });
+      toast.success("Saved — Murmur is processing your recording.");
+      if (result.id) router.push(`/app/recordings/${result.id}`);
+    } catch {
+      toast.error("Could not save the recording.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const onToggle = () => {
     if (isRecording) {
-      void rec.stop();
+      void save();
       return;
     }
     if (!acknowledged) {
@@ -54,7 +98,6 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
 
   const orbState =
     rec.state === "paused" ? "paused" : isRecording ? "recording" : "idle";
-
   const selectableDevices = rec.devices.filter((d) => d.deviceId);
 
   return (
@@ -65,7 +108,7 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
         onCancel={() => setConsentOpen(false)}
       />
 
-      {!isRecording && selectableDevices.length > 0 ? (
+      {!isRecording && rec.state !== "error" && selectableDevices.length > 0 ? (
         <Select
           value={rec.deviceId ?? undefined}
           onValueChange={rec.setDeviceId}
@@ -98,7 +141,9 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
       <RecordOrb
         state={orbState}
         onClick={onToggle}
-        disabled={rec.state === "requesting" || rec.state === "stopping"}
+        disabled={
+          rec.state === "requesting" || rec.state === "stopping" || saving
+        }
       />
 
       <LiveWaveform stream={rec.stream} active={rec.state === "recording"} />
@@ -121,14 +166,38 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
         </div>
       ) : null}
 
-      <p className="text-sm text-fg-muted" aria-live="polite">
-        {rec.state === "idle" && "Tap to start recording"}
-        {rec.state === "requesting" && "Allow microphone access to start."}
-        {rec.state === "recording" && "Listening — tap the orb to stop."}
-        {rec.state === "paused" && "Paused"}
-        {rec.state === "stopping" && "Finishing up…"}
-        {rec.state === "error" && "We couldn't access your microphone."}
-      </p>
+      {rec.state === "error" && rec.error ? (
+        <div className="max-w-md rounded-lg border border-border bg-bg-elevated p-4 text-center">
+          <p className="text-sm text-fg">{ERROR_COPY[rec.error]}</p>
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <Button variant="secondary" size="sm" onClick={rec.reset}>
+              Try again
+            </Button>
+            <Button asChild size="sm" variant="ghost">
+              <Link href="/app/upload">
+                <Upload className="h-4 w-4" />
+                Upload instead
+              </Link>
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-sm text-fg-muted" aria-live="polite">
+          {saving
+            ? "Saving…"
+            : rec.state === "idle"
+              ? "Tap to start recording"
+              : rec.state === "requesting"
+                ? "Allow microphone access to start."
+                : rec.state === "recording"
+                  ? "Listening — tap the orb to stop."
+                  : rec.state === "paused"
+                    ? "Paused"
+                    : rec.state === "stopping"
+                      ? "Finishing up…"
+                      : ""}
+        </p>
+      )}
     </div>
   );
 }
