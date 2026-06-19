@@ -16,3 +16,8 @@ export const recordingSourceEnum = pgEnum("recording_source", [
   "upload",
   "system",
 ]);
+
+export const actionItemStatusEnum = pgEnum("action_item_status", [
+  "open",
+  "done",
+]);

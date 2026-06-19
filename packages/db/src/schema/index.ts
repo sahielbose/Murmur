@@ -7,3 +7,8 @@ export * from "./users";
 export * from "./recordings";
 export * from "./speakers";
 export * from "./transcript";
+export * from "./templates";
+export * from "./summaries";
+export * from "./action-items";
+export * from "./tags";
+export * from "./mind-maps";
