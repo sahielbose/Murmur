@@ -12,3 +12,8 @@ export * from "./summaries";
 export * from "./action-items";
 export * from "./tags";
 export * from "./mind-maps";
+export * from "./ask";
+export * from "./embeddings";
+export * from "./highlights";
+export * from "./combine";
+export * from "./leads";
