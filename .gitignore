@@ -19,9 +19,9 @@ coverage/
 .env.*
 !.env.example
 
-# local data / storage
-/.data/
-/storage/
+# local data / storage (any package's cwd)
+.data/
+storage/
 *.local
 
 # logs

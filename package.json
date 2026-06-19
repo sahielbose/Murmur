@@ -11,6 +11,7 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test": "vitest run",
     "db:up": "sh scripts/db-up.sh",
     "db:down": "sh scripts/db-down.sh",
     "db:generate": "pnpm --filter @murmur/db db:generate",
@@ -20,10 +21,15 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@murmur/ai": "workspace:*",
+    "@murmur/db": "workspace:*",
+    "@murmur/jobs": "workspace:*",
+    "dotenv": "^17.4.2",
     "husky": "^9",
     "lint-staged": "^15",
     "prettier": "^3",
-    "prettier-plugin-tailwindcss": "^0.8.0"
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "vitest": "^4.1.9"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs,cjs,json,css,md,yml,yaml}": "prettier --write --ignore-unknown"
