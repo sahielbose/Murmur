@@ -53,32 +53,32 @@ const RECORDINGS: SeedRecording[] = [
     ],
     segments: [
       {
-        speaker: 1,
+        speaker: 0,
         startMs: 0,
         text: "Thanks for coming by. Walk me through the bathroom first.",
       },
       {
-        speaker: 0,
+        speaker: 1,
         startMs: 5200,
         text: "Sure. For the bathroom, the demo and re-tile runs about four thousand, plus fixtures.",
       },
       {
-        speaker: 1,
+        speaker: 0,
         startMs: 12800,
         text: "And the cabinets in the kitchen — what brand were you quoting?",
       },
       {
-        speaker: 0,
+        speaker: 1,
         startMs: 18400,
         text: "I had penciled in the mid-tier line, but send me the brand you liked and I'll re-price it.",
       },
       {
-        speaker: 1,
+        speaker: 0,
         startMs: 26100,
         text: "Got it. When could the tile actually be delivered?",
       },
       {
-        speaker: 0,
+        speaker: 1,
         startMs: 31500,
         text: "If we order this week, delivery lands the following Tuesday. I'll confirm the date.",
       },
