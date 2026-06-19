@@ -6,9 +6,16 @@ import {
   transcriptSegments,
   summaries,
   actionItems,
+  mindMaps,
+  embeddings,
   type Recording,
 } from "@murmur/db";
-import { getStt, getLlm, type TranscriptResult } from "@murmur/ai";
+import {
+  getStt,
+  getLlm,
+  getEmbeddings,
+  type TranscriptResult,
+} from "@murmur/ai";
 
 export type RecordingStatus = Recording["status"];
 
@@ -155,4 +162,55 @@ export async function generateActionItems(
       })),
     );
   }
+}
+
+/** Generate + persist the mind map (mock LLM). Idempotent on re-run. */
+export async function generateMindMap(
+  id: string,
+  transcript: TranscriptResult,
+): Promise<void> {
+  const rec = await getRecording(id);
+  if (!rec) throw new Error(`recording ${id} not found`);
+  const llm = getLlm();
+  const result = await llm.mindMap({ transcript, title: rec.title });
+
+  const db = getDb();
+  await db.delete(mindMaps).where(eq(mindMaps.recordingId, id));
+  await db.insert(mindMaps).values({
+    recordingId: id,
+    graph: { nodes: result.nodes, edges: result.edges },
+  });
+}
+
+/**
+ * Embed the persisted transcript segments into pgvector for search + Ask.
+ * Reads the stored segments (with ids) so it can run in parallel with the
+ * summary/actions/mind-map steps. Idempotent on re-run.
+ */
+export async function embedRecording(id: string): Promise<void> {
+  const rec = await getRecording(id);
+  if (!rec) throw new Error(`recording ${id} not found`);
+  const db = getDb();
+
+  const segs = await db
+    .select()
+    .from(transcriptSegments)
+    .where(eq(transcriptSegments.recordingId, id))
+    .orderBy(transcriptSegments.startMs);
+
+  await db.delete(embeddings).where(eq(embeddings.recordingId, id));
+  if (segs.length === 0) return;
+
+  const emb = getEmbeddings();
+  const vectors = await emb.embed(segs.map((s) => s.text));
+  await db.insert(embeddings).values(
+    segs.map((s, i) => ({
+      userId: rec.userId,
+      recordingId: id,
+      segmentId: s.id,
+      chunkText: s.text,
+      embedding: vectors[i]!,
+      kind: "segment" as const,
+    })),
+  );
 }

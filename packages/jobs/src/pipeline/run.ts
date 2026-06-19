@@ -1,5 +1,7 @@
 import {
+  embedRecording,
   generateActionItems,
+  generateMindMap,
   generateSummary,
   persistTranscript,
   setStatus,
@@ -20,8 +22,9 @@ export async function runPipeline(recordingId: string): Promise<void> {
   await Promise.all([
     generateSummary(recordingId, transcript),
     generateActionItems(recordingId, transcript),
+    generateMindMap(recordingId, transcript),
+    embedRecording(recordingId),
   ]);
-  // mind map / embed → commit 5
 
   await setStatus(recordingId, "done");
 }
