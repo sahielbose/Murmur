@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getLlm } from "@murmur/ai";
 import { getDbUser } from "@/lib/current-user";
 import { addMessage, getOrCreateThread, retrieveContext } from "@/lib/ask";
 
@@ -38,20 +39,29 @@ export async function POST(req: NextRequest) {
   const context = await retrieveContext(user.id, question, {
     recordingId: body.scope === "recording" ? body.scopeRecordingId : null,
   });
-  const citations = context.slice(0, 3).map((c) => ({
+
+  const titleByRecording = new Map(
+    context.map((c) => [c.recordingId, c.recordingTitle]),
+  );
+  const result = await getLlm().ask({
+    question,
+    context: context.map((c) => ({
+      recordingId: c.recordingId,
+      startMs: c.startMs,
+      text: c.text,
+    })),
+  });
+  const citations = result.citations.map((c) => ({
     recordingId: c.recordingId,
     startMs: c.startMs,
-    label: c.recordingTitle,
+    label: titleByRecording.get(c.recordingId),
   }));
 
-  const answer = context.length
-    ? `From your recordings: ${context[0]!.text}`
-    : "I don't see that in your recordings.";
-  await addMessage(thread.id, "assistant", answer, citations);
+  await addMessage(thread.id, "assistant", result.answer, citations);
 
   return NextResponse.json({
     threadId: thread.id,
     threadTitle: thread.title,
-    message: { content: answer, citations },
+    message: { content: result.answer, citations },
   });
 }
