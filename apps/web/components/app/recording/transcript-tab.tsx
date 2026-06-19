@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { formatTimestamp } from "@/lib/format";
 import type { TranscriptRow } from "@/lib/recordings";
@@ -24,6 +25,14 @@ function toTurns(rows: TranscriptRow[]): Turn[] {
  */
 export function TranscriptTab({ rows }: { rows: TranscriptRow[] }) {
   const audio = useRecordingAudio();
+  const activeRef = useRef<HTMLDivElement>(null);
+
+  // Deep-link: scroll the linked moment into view on mount.
+  useEffect(() => {
+    if (activeRef.current) {
+      activeRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+  }, []);
 
   if (rows.length === 0) {
     return (
@@ -34,17 +43,30 @@ export function TranscriptTab({ rows }: { rows: TranscriptRow[] }) {
   }
 
   const turns = toTurns(rows);
+  const cur = audio?.currentMs ?? 0;
+
+  // The active turn is the one containing `cur`, else the nearest turn at or
+  // just before it (so a deep-linked timestamp highlights a single turn).
+  let activeIndex = turns.findIndex(
+    (t) =>
+      cur >= t.segments[0]!.startMs &&
+      cur < t.segments[t.segments.length - 1]!.endMs,
+  );
+  if (activeIndex === -1 && cur > 0) {
+    for (let i = 0; i < turns.length; i++) {
+      if (cur + 2000 >= turns[i]!.segments[0]!.startMs) activeIndex = i;
+    }
+  }
 
   return (
     <div className="divide-y divide-border">
       {turns.map((turn, i) => {
         const start = turn.segments[0]!.startMs;
-        const end = turn.segments[turn.segments.length - 1]!.endMs;
-        const active =
-          audio && audio.currentMs >= start && audio.currentMs < end;
+        const active = i === activeIndex;
         return (
           <div
             key={i}
+            ref={active ? activeRef : undefined}
             className={cn(
               "flex gap-4 px-2 py-3 transition-colors",
               active ? "bg-bg-subtle" : "",

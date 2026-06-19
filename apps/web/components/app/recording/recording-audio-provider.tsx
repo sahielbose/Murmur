@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
   type ReactNode,
@@ -32,14 +33,16 @@ export function useRecordingAudio() {
 export function RecordingAudioProvider({
   src,
   fallbackDurationSec,
+  initialSeekMs,
   children,
 }: {
   src: string | null;
   fallbackDurationSec?: number | null;
+  initialSeekMs?: number | null;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLAudioElement>(null);
-  const [currentMs, setCurrentMs] = useState(0);
+  const [currentMs, setCurrentMs] = useState(initialSeekMs ?? 0);
   const [durationMs, setDurationMs] = useState(
     (fallbackDurationSec ?? 0) * 1000,
   );
@@ -51,6 +54,18 @@ export function RecordingAudioProvider({
     el.currentTime = ms / 1000;
     void el.play().catch(() => {});
   }, []);
+
+  // Deep-link: seek the audio to the linked moment once it can play.
+  useEffect(() => {
+    if (initialSeekMs == null) return;
+    const el = ref.current;
+    if (!el) return;
+    const onReady = () => {
+      el.currentTime = initialSeekMs / 1000;
+    };
+    el.addEventListener("loadedmetadata", onReady, { once: true });
+    return () => el.removeEventListener("loadedmetadata", onReady);
+  }, [initialSeekMs]);
 
   const toggle = useCallback(() => {
     const el = ref.current;

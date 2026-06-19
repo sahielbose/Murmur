@@ -24,10 +24,14 @@ import { RecordingTabs } from "@/components/app/recording/recording-tabs";
 
 export default async function RecordingDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ t?: string }>;
 }) {
   const { id } = await params;
+  const { t } = await searchParams;
+  const seekMs = t && Number.isFinite(Number(t)) ? Number(t) * 1000 : null;
   const user = await getDbUser();
   if (!user) notFound();
 
@@ -45,6 +49,7 @@ export default async function RecordingDetailPage({
       <RecordingAudioProvider
         src={recording.audioKey ? `/api/recordings/${id}/audio` : null}
         fallbackDurationSec={recording.durationSec}
+        initialSeekMs={seekMs}
       >
         <RecordingHeader
           recording={{
@@ -66,6 +71,7 @@ export default async function RecordingDetailPage({
             <ProcessingPanel recordingId={id} status={recording.status} />
           ) : (
             <RecordingTabs
+              defaultTab={seekMs != null ? "transcript" : "summary"}
               summary={
                 <SummaryTab
                   recordingId={id}

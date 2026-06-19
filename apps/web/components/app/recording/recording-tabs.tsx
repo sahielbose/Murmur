@@ -10,14 +10,16 @@ export function RecordingTabs({
   transcript,
   actions,
   mindMap,
+  defaultTab = "summary",
 }: {
   summary: ReactNode;
   transcript: ReactNode;
   actions: ReactNode;
   mindMap: ReactNode;
+  defaultTab?: string;
 }) {
   return (
-    <Tabs defaultValue="summary" className="w-full">
+    <Tabs defaultValue={defaultTab} className="w-full">
       <TabsList>
         <TabsTrigger value="summary">Summary</TabsTrigger>
         <TabsTrigger value="transcript">Transcript</TabsTrigger>
