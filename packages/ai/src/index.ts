@@ -1,6 +1,6 @@
 /**
- * @murmur/ai — provider abstractions for STT, LLM, and embeddings, plus
- * prompts and the summary template library. Mock adapters land in Phase 5,
- * real providers in Phases 19–20 (MURMUR_CONTEXT.md §5, §8).
+ * @murmur/ai — the provider seam (MURMUR_CONTEXT.md §5). STT, LLM, embeddings,
+ * and storage each expose an interface with a deterministic mock adapter;
+ * real adapters are wired in Phases 18–20 and selected by env.
  */
-export const AI_PACKAGE = "@murmur/ai" as const;
+export * from "./stt/types";
