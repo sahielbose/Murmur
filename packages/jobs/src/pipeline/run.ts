@@ -1,5 +1,6 @@
 import {
   embedRecording,
+  emitHighlights,
   failRecording,
   generateActionItems,
   generateMindMap,
@@ -29,6 +30,7 @@ export async function runPipeline(recordingId: string): Promise<void> {
       embedRecording(recordingId),
     ]);
 
+    await emitHighlights(recordingId);
     await setStatus(recordingId, "done");
   } catch (err) {
     await failRecording(

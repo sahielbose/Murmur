@@ -12,6 +12,7 @@ import {
   actionItems,
   mindMaps,
   recordingTags,
+  highlights,
 } from "./schema";
 import type { MindMapGraph } from "./schema";
 import { SYSTEM_TEMPLATES } from "@murmur/ai";
@@ -298,13 +299,29 @@ async function main() {
       model: "mock",
     });
 
-    await db.insert(actionItems).values(
-      r.actions.map((a) => ({
-        recordingId: rec.id,
+    const actionRows = await db
+      .insert(actionItems)
+      .values(
+        r.actions.map((a) => ({
+          recordingId: rec.id,
+          userId: user.id,
+          text: a.text,
+          owner: a.owner ?? null,
+          status: "open" as const,
+        })),
+      )
+      .returning();
+
+    await db.insert(highlights).values(
+      actionRows.slice(0, 2).map((a) => ({
         userId: user.id,
-        text: a.text,
-        owner: a.owner ?? null,
-        status: "open" as const,
+        recordingId: rec.id,
+        kind: "commitment" as const,
+        payload: {
+          text: a.text,
+          recordingTitle: r.title,
+          actionItemId: a.id,
+        },
       })),
     );
 

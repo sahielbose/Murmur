@@ -2,6 +2,7 @@ import { inngest } from "../client";
 import type { RecordingCreatedData } from "../events";
 import {
   embedRecording,
+  emitHighlights,
   failRecording,
   generateActionItems,
   generateMindMap,
@@ -60,6 +61,7 @@ export const processRecording = inngest.createFunction(
       step.run("embed", () => embedRecording(recordingId)),
     ]);
 
+    await step.run("emit-highlights", () => emitHighlights(recordingId));
     await step.run("mark-done", () => setStatus(recordingId, "done"));
 
     return { recordingId, status: "done" as const };

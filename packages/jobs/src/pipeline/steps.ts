@@ -8,6 +8,7 @@ import {
   actionItems,
   mindMaps,
   embeddings,
+  highlights,
   type Recording,
 } from "@murmur/db";
 import {
@@ -211,6 +212,43 @@ export async function embedRecording(id: string): Promise<void> {
       chunkText: s.text,
       embedding: vectors[i]!,
       kind: "segment" as const,
+    })),
+  );
+}
+
+/**
+ * Surface open action items as daily-highlight candidates ("you said you'd…"),
+ * consumed by the resurfacing job (MURMUR_CONTEXT.md §7, §10). Idempotent.
+ */
+export async function emitHighlights(id: string): Promise<void> {
+  const rec = await getRecording(id);
+  if (!rec) return;
+  const db = getDb();
+
+  const items = await db
+    .select()
+    .from(actionItems)
+    .where(
+      and(eq(actionItems.recordingId, id), eq(actionItems.status, "open")),
+    );
+
+  await db
+    .delete(highlights)
+    .where(
+      and(eq(highlights.recordingId, id), eq(highlights.kind, "commitment")),
+    );
+  if (items.length === 0) return;
+
+  await db.insert(highlights).values(
+    items.slice(0, 3).map((it) => ({
+      userId: rec.userId,
+      recordingId: id,
+      kind: "commitment" as const,
+      payload: {
+        text: it.text,
+        recordingTitle: rec.title,
+        actionItemId: it.id,
+      },
     })),
   );
 }
