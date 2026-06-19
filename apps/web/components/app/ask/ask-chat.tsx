@@ -4,19 +4,30 @@ import { useState } from "react";
 import { Sparkles, ArrowUp, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AskMessage, type AskMessageData } from "./ask-message";
 
 export type ThreadSummary = { id: string; title: string };
+export type RecordingOption = { id: string; title: string };
 
 export function AskChat({
   initialThreads,
+  recordings,
 }: {
   initialThreads: ThreadSummary[];
+  recordings: RecordingOption[];
 }) {
   const [threads, setThreads] = useState(initialThreads);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<AskMessageData[]>([]);
   const [input, setInput] = useState("");
+  const [scopeId, setScopeId] = useState("all");
   const [sending, setSending] = useState(false);
 
   const send = async () => {
@@ -32,7 +43,8 @@ export function AskChat({
         body: JSON.stringify({
           threadId: activeId,
           question: q,
-          scope: "library",
+          scope: scopeId === "all" ? "library" : "recording",
+          scopeRecordingId: scopeId === "all" ? null : scopeId,
         }),
       });
       const data = (await res.json()) as {
@@ -150,6 +162,22 @@ export function AskChat({
         </div>
 
         <div className="border-t border-border p-4">
+          <div className="mx-auto mb-2 flex max-w-2xl items-center gap-2">
+            <span className="text-xs text-fg-subtle">Searching</span>
+            <Select value={scopeId} onValueChange={setScopeId}>
+              <SelectTrigger className="h-8 w-56 text-xs">
+                <SelectValue placeholder="All recordings" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All recordings</SelectItem>
+                {recordings.map((r) => (
+                  <SelectItem key={r.id} value={r.id}>
+                    {r.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <form
             onSubmit={(e) => {
               e.preventDefault();
