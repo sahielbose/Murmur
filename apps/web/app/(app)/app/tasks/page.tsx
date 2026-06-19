@@ -1,7 +1,7 @@
 import { getDbUser } from "@/lib/current-user";
 import { listTasksForUser } from "@/lib/action-items";
 import { PageHeader } from "@/components/app/page-header";
-import { TasksView } from "@/components/app/tasks-view";
+import { TasksHub } from "@/components/app/tasks-hub";
 
 export default async function TasksPage() {
   const user = await getDbUser();
@@ -14,7 +14,7 @@ export default async function TasksPage() {
         description="Every action item Murmur found, across all your recordings."
       />
       <div className="mt-6">
-        <TasksView
+        <TasksHub
           tasks={tasks.map((t) => ({
             id: t.id,
             text: t.text,
