@@ -17,6 +17,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { downloadText, mdToPlainText, slugify } from "@/lib/export-text";
@@ -154,6 +155,28 @@ export function SummaryTab({
                   }
                 >
                   Plain text (.txt)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    window.location.href = `/api/recordings/${recordingId}/export?format=pdf`;
+                  }}
+                >
+                  PDF (.pdf)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    window.location.href = `/api/recordings/${recordingId}/export?format=docx`;
+                  }}
+                >
+                  Word (.docx)
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onSelect={() => {
+                    window.location.href = `/api/recordings/${recordingId}/audio?download=1`;
+                  }}
+                >
+                  Audio file
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

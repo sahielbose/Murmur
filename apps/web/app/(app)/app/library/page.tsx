@@ -2,6 +2,7 @@ import { getDbUser } from "@/lib/current-user";
 import { listLibrary } from "@/lib/recordings";
 import { PageHeader } from "@/components/app/page-header";
 import { LibraryView } from "@/components/app/library-view";
+import { BulkExportButton } from "@/components/app/bulk-export-button";
 
 export default async function LibraryPage() {
   const user = await getDbUser();
@@ -12,7 +13,9 @@ export default async function LibraryPage() {
       <PageHeader
         title="Library"
         description="Every conversation you've captured."
-      />
+      >
+        {recordings.length > 0 ? <BulkExportButton /> : null}
+      </PageHeader>
       <div className="mt-6">
         {recordings.length === 0 ? (
           <p className="text-sm text-fg-muted">
