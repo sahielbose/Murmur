@@ -60,3 +60,24 @@ export async function PATCH(
   }
   return NextResponse.json({ id: rec.id, title: rec.title });
 }
+
+/** Soft-delete a recording → recycle bin (MURMUR_CONTEXT.md §3.8). */
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const user = await getDbUser();
+  if (!user) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  const { id } = await params;
+  const [rec] = await getDb()
+    .update(recordings)
+    .set({ deletedAt: new Date() })
+    .where(and(eq(recordings.id, id), eq(recordings.userId, user.id)))
+    .returning();
+  if (!rec) {
+    return NextResponse.json({ error: "not found" }, { status: 404 });
+  }
+  return NextResponse.json({ ok: true });
+}

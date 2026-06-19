@@ -4,6 +4,7 @@ import {
   desc,
   eq,
   isNull,
+  isNotNull,
   getDb,
   recordings,
   recordingTags,
@@ -141,6 +142,16 @@ export async function listRecordingsForUser(
     .from(recordings)
     .where(and(eq(recordings.userId, userId), isNull(recordings.deletedAt)))
     .orderBy(desc(recordings.recordedAt), desc(recordings.createdAt));
+}
+
+/** Soft-deleted recordings (recycle bin), most recently deleted first. */
+export async function listTrashedForUser(userId: string): Promise<Recording[]> {
+  const db = getDb();
+  return db
+    .select()
+    .from(recordings)
+    .where(and(eq(recordings.userId, userId), isNotNull(recordings.deletedAt)))
+    .orderBy(desc(recordings.deletedAt));
 }
 
 export type LibraryCard = {

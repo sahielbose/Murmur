@@ -9,6 +9,7 @@ import {
   listRecordingsForUser,
 } from "@/lib/recordings";
 import { CombineButton } from "@/components/app/recording/combine-button";
+import { DeleteRecordingButton } from "@/components/app/recording/delete-recording-button";
 import { listTemplatesForUser } from "@/lib/templates";
 import { listTagsForUser } from "@/lib/tags";
 import { getActionItemsForRecording } from "@/lib/action-items";
@@ -73,12 +74,13 @@ export default async function RecordingDetailPage({
             color: t.color,
           }))}
         />
-        <div className="mt-4">
+        <div className="mt-4 flex items-center gap-2">
           <CombineButton
             recordingId={id}
             recordingTitle={recording.title}
             others={others.map((r) => ({ id: r.id, title: r.title }))}
           />
+          <DeleteRecordingButton recordingId={id} />
         </div>
         <div className="mt-4">
           <AudioPlayerBar />
