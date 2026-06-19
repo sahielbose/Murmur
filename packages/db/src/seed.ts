@@ -1,5 +1,5 @@
 import "./load-env";
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { getDb, closeDb } from "./client";
 import {
   users,
@@ -16,7 +16,46 @@ import {
   embeddings,
 } from "./schema";
 import type { MindMapGraph } from "./schema";
-import { SYSTEM_TEMPLATES, mockEmbeddings } from "@murmur/ai";
+import { SYSTEM_TEMPLATES, mockEmbeddings, getStorage } from "@murmur/ai";
+
+/**
+ * A valid, silent 8-bit/8kHz mono WAV of the given length. Lets the seeded
+ * recordings drive a real <audio> element so the player, scrubber, and
+ * click-to-seek work end-to-end on demo data (real uploads supply real audio).
+ */
+function silentWav(durationSec: number): Uint8Array {
+  const sampleRate = 8000;
+  const numSamples = Math.max(1, Math.floor(durationSec * sampleRate));
+  const buf = new Uint8Array(44 + numSamples);
+  const dv = new DataView(buf.buffer);
+  let o = 0;
+  const str = (s: string) => {
+    for (let i = 0; i < s.length; i++) buf[o++] = s.charCodeAt(i);
+  };
+  const u32 = (n: number) => {
+    dv.setUint32(o, n, true);
+    o += 4;
+  };
+  const u16 = (n: number) => {
+    dv.setUint16(o, n, true);
+    o += 2;
+  };
+  str("RIFF");
+  u32(36 + numSamples);
+  str("WAVE");
+  str("fmt ");
+  u32(16);
+  u16(1); // PCM
+  u16(1); // mono
+  u32(sampleRate);
+  u32(sampleRate); // byte rate (sampleRate * blockAlign)
+  u16(1); // block align
+  u16(8); // bits per sample
+  str("data");
+  u32(numSamples);
+  buf.fill(0x80, 44); // 8-bit PCM silence
+  return buf;
+}
 
 type SeedSpeaker = { localLabel: string; displayName: string };
 type SeedSegment = { speaker: number; startMs: number; text: string };
@@ -42,7 +81,7 @@ const TAGS = [
 
 const RECORDINGS: SeedRecording[] = [
   {
-    title: "Kitchen remodel — contractor walkthrough",
+    title: "Kitchen remodel - contractor walkthrough",
     source: "mic",
     durationSec: 1485,
     recordedAt: "2026-06-15T10:30:00Z",
@@ -65,7 +104,7 @@ const RECORDINGS: SeedRecording[] = [
       {
         speaker: 0,
         startMs: 12800,
-        text: "And the cabinets in the kitchen — what brand were you quoting?",
+        text: "And the cabinets in the kitchen - what brand were you quoting?",
       },
       {
         speaker: 1,
@@ -84,7 +123,7 @@ const RECORDINGS: SeedRecording[] = [
       },
     ],
     summaryMd:
-      "## Kitchen remodel — contractor walkthrough\n\n**Scope.** Bathroom demo + re-tile (~$4,000 plus fixtures) and kitchen cabinets (mid-tier line, to be re-priced).\n\n**Decisions.**\n- Alex to choose the cabinet brand; Marco will re-quote.\n- Tile delivery the Tuesday after ordering, pending confirmation.\n\n**Open questions.**\n- Final plumbing cost — a second quote is worth getting.",
+      "## Kitchen remodel - contractor walkthrough\n\n**Scope.** Bathroom demo + re-tile (~$4,000 plus fixtures) and kitchen cabinets (mid-tier line, to be re-priced).\n\n**Decisions.**\n- Alex to choose the cabinet brand; Marco will re-quote.\n- Tile delivery the Tuesday after ordering, pending confirmation.\n\n**Open questions.**\n- Final plumbing cost - a second quote is worth getting.",
     actions: [
       { text: "Email Marco the cabinet brand to re-price", owner: "Alex" },
       { text: "Confirm the tile delivery date", owner: "Marco" },
@@ -98,7 +137,7 @@ const RECORDINGS: SeedRecording[] = [
         { id: "materials", label: "Materials", level: 1 },
         { id: "bath", label: "Bathroom ~$4k", level: 2 },
         { id: "cabinets", label: "Cabinets (re-price)", level: 2 },
-        { id: "tile", label: "Tile — next Tuesday", level: 2 },
+        { id: "tile", label: "Tile - next Tuesday", level: 2 },
       ],
       edges: [
         { from: "root", to: "budget" },
@@ -111,7 +150,7 @@ const RECORDINGS: SeedRecording[] = [
     },
   },
   {
-    title: "Product sync — weekly standup",
+    title: "Product sync - weekly standup",
     source: "mic",
     durationSec: 920,
     recordedAt: "2026-06-16T09:00:00Z",
@@ -129,7 +168,7 @@ const RECORDINGS: SeedRecording[] = [
       {
         speaker: 0,
         startMs: 4300,
-        text: "Blocked on the token rotation change — I need review on the PR today.",
+        text: "Blocked on the token rotation change - I need review on the PR today.",
       },
       {
         speaker: 1,
@@ -143,7 +182,7 @@ const RECORDINGS: SeedRecording[] = [
       },
     ],
     summaryMd:
-      "## Product sync — weekly standup\n\n**Status.** Auth migration is blocked on the token-rotation PR; review needed today.\n\n**Next.**\n- Priya to review the PR after standup.\n- Alex to share the Q3 roadmap with the team.",
+      "## Product sync - weekly standup\n\n**Status.** Auth migration is blocked on the token-rotation PR; review needed today.\n\n**Next.**\n- Priya to review the PR after standup.\n- Alex to share the Q3 roadmap with the team.",
     actions: [
       { text: "Review the token-rotation PR", owner: "Priya" },
       { text: "Share the Q3 roadmap doc in the channel", owner: "Alex" },
@@ -163,7 +202,7 @@ const RECORDINGS: SeedRecording[] = [
     },
   },
   {
-    title: "Dr. Reyes — annual checkup",
+    title: "Dr. Reyes - annual checkup",
     source: "upload",
     durationSec: 1320,
     recordedAt: "2026-06-12T14:00:00Z",
@@ -176,7 +215,7 @@ const RECORDINGS: SeedRecording[] = [
       {
         speaker: 1,
         startMs: 0,
-        text: "Your blood pressure today was a little high — let's recheck it with labs.",
+        text: "Your blood pressure today was a little high - let's recheck it with labs.",
       },
       {
         speaker: 0,
@@ -195,7 +234,7 @@ const RECORDINGS: SeedRecording[] = [
       },
     ],
     summaryMd:
-      "## Dr. Reyes — annual checkup\n\n> Information, not medical advice. Follow up with your clinician.\n\n**Notes.**\n- Blood pressure slightly elevated today; recheck with labs.\n- Fasting panel ordered.\n- Prescription refill to be sent.\n\n**Follow-ups.**\n- Schedule fasting lab work this week.",
+      "## Dr. Reyes - annual checkup\n\n> Information, not medical advice. Follow up with your clinician.\n\n**Notes.**\n- Blood pressure slightly elevated today; recheck with labs.\n- Fasting panel ordered.\n- Prescription refill to be sent.\n\n**Follow-ups.**\n- Schedule fasting lab work this week.",
     actions: [
       { text: "Schedule the fasting lab work", owner: "Alex" },
       { text: "Pick up the prescription refill", owner: "Alex" },
@@ -254,6 +293,7 @@ async function main() {
   const tagByName = new Map(tagRows.map((t) => [t.name, t.id]));
 
   console.log("Seeding recordings…");
+  const storage = getStorage();
   for (const r of RECORDINGS) {
     const [rec] = await db
       .insert(recordings)
@@ -269,6 +309,16 @@ async function main() {
       })
       .returning();
     if (!rec) throw new Error("failed to seed recording");
+
+    // Write a short silent clip that covers the transcript so playback works.
+    // Keyed under the dev session id, which owns it at the storage route.
+    const lastMs = Math.max(0, ...r.segments.map((s) => s.startMs + 5000));
+    const audioKey = `audio/dev-user/${rec.id}.wav`;
+    await storage.put(audioKey, silentWav(lastMs / 1000));
+    await db
+      .update(recordings)
+      .set({ audioKey })
+      .where(eq(recordings.id, rec.id));
 
     const speakerRows = await db
       .insert(recordingSpeakers)
@@ -352,7 +402,7 @@ async function main() {
   const [{ count }] = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(recordings);
-  console.log(`Seed complete — ${count} recordings for ${user.email}.`);
+  console.log(`Seed complete - ${count} recordings for ${user.email}.`);
 
   await closeDb();
 }

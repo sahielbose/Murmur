@@ -1,9 +1,25 @@
 import { mkdir, readFile, writeFile, stat, unlink } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import type { SignedUrl, Storage } from "./types";
 
+/**
+ * Base storage dir. Resolves to `<repo-root>/.data/storage` independent of the
+ * process CWD, so the web server (cwd apps/web) and scripts like the seed
+ * (cwd packages/db) share one object store. Override with STORAGE_LOCAL_DIR.
+ */
 function baseDir(): string {
-  return resolve(process.env.STORAGE_LOCAL_DIR ?? "./.data/storage");
+  if (process.env.STORAGE_LOCAL_DIR) {
+    return resolve(process.env.STORAGE_LOCAL_DIR);
+  }
+  let dir = process.cwd();
+  for (let i = 0; i < 8; i++) {
+    if (existsSync(join(dir, "pnpm-workspace.yaml"))) break;
+    const parent = dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return resolve(dir, ".data/storage");
 }
 
 /** Resolve a storage key to a path inside the base dir (no traversal). */
@@ -43,7 +59,7 @@ export const localFileStorage: Storage = {
     try {
       await unlink(pathFor(key));
     } catch {
-      // already gone — treat as success
+      // already gone - treat as success
     }
   },
 

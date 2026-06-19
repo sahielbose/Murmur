@@ -21,7 +21,6 @@ coverage/
 
 # local data / storage (any package's cwd)
 .data/
-storage/
 *.local
 
 # logs
