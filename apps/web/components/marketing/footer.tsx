@@ -6,7 +6,7 @@ const COLUMNS = [
     title: "Product",
     links: [
       { label: "Web app", href: "/app" },
-      { label: "Desktop — soon", href: "#" },
+      { label: "Desktop - soon", href: "#" },
       { label: "Pricing", href: "/pricing" },
     ],
   },
@@ -28,7 +28,7 @@ const COLUMNS = [
   },
 ];
 
-/** Marketing footer — software only, no shipping / track-order (MURMUR_UI.md §7). */
+/** Marketing footer - software only, no shipping / track-order (MURMUR_UI.md §7). */
 export function Footer() {
   const year = new Date().getFullYear();
 

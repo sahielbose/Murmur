@@ -6,7 +6,7 @@ import { SearchCommand } from "@/components/app/search-command";
 import { getSession } from "@/lib/auth";
 
 /**
- * Authenticated app shell — sidebar rail + (top bar + content) column. Guarded
+ * Authenticated app shell - sidebar rail + (top bar + content) column. Guarded
  * by the (mock) session; unauthenticated visitors are sent to /login.
  */
 export default async function AppLayout({ children }: { children: ReactNode }) {

@@ -37,7 +37,7 @@ function mulberry32(seed: number): () => number {
 /**
  * Resurfacing: pick up to `count` past commitments to bring back, deterministic
  * per (user, day), and store them as the user's single active "digest"
- * highlight. Never sends anything — surfacing only (MURMUR_CONTEXT.md §10).
+ * highlight. Never sends anything - surfacing only (MURMUR_CONTEXT.md §10).
  */
 export async function buildDigestForUser(
   userId: string,

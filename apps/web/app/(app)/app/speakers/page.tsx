@@ -11,7 +11,7 @@ export default async function SpeakersPage() {
     <main className="flex-1 p-6 md:p-8">
       <PageHeader
         title="Speakers"
-        description="Manage who said what — rename or merge speakers across your recordings."
+        description="Manage who said what - rename or merge speakers across your recordings."
       />
       <div className="mt-6">
         <SpeakersManager speakers={speakers} />

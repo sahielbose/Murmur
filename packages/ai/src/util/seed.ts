@@ -8,7 +8,7 @@ export function hashString(s: string): number {
   return h >>> 0;
 }
 
-/** mulberry32 — a tiny deterministic PRNG seeded by a 32-bit integer. */
+/** mulberry32 - a tiny deterministic PRNG seeded by a 32-bit integer. */
 export function mulberry32(seed: number) {
   let a = seed >>> 0;
   return function next(): number {

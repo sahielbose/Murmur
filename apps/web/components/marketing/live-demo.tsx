@@ -5,13 +5,13 @@ import { Check } from "lucide-react";
 
 const SCRIPT = [
   { speaker: "You", text: "Can we ship the beta by Friday?" },
-  { speaker: "Sam", text: "Yes — I'll send the build to the team tonight." },
+  { speaker: "Sam", text: "Yes - I'll send the build to the team tonight." },
 ];
 const ACTION = "Send the beta build to the team";
 const BARS = 48;
 
 /**
- * Hero centerpiece (MURMUR_UI.md §7, §12): a coded loop — waveform animates,
+ * Hero centerpiece (MURMUR_UI.md §7, §12): a coded loop - waveform animates,
  * transcript lines auto-type, then an "Action item" chip slides up. No device,
  * no video. Pauses offscreen and honours prefers-reduced-motion.
  */

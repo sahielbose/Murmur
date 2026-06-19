@@ -21,7 +21,7 @@ export default async function CombinedPage({
     <main className="flex-1 p-6 md:p-8">
       <PageHeader
         title={view.group.title}
-        description={`${view.members.length} recordings combined — each section links back to its source.`}
+        description={`${view.members.length} recordings combined - each section links back to its source.`}
       />
       <div className="mt-6 space-y-5">
         {view.members.map((m) => (

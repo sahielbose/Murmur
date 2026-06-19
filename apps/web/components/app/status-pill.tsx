@@ -11,7 +11,7 @@ const MAP: Record<string, { label: string; tone: Tone }> = {
   failed: { label: "Failed", tone: "failed" },
 };
 
-/** Recording status pill — pairs the dot with text (not color alone, a11y). */
+/** Recording status pill - pairs the dot with text (not color alone, a11y). */
 export function StatusPill({ status }: { status: string }) {
   const info = MAP[status] ?? { label: status, tone: "processing" as Tone };
   return (

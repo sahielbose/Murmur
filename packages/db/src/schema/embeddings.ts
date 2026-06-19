@@ -6,7 +6,7 @@ import { users } from "./users";
 import { timestamps } from "./_helpers";
 
 /**
- * Chunk embeddings for hybrid search + Ask RAG (MURMUR_CONTEXT.md §8–§9).
+ * Chunk embeddings for hybrid search + Ask RAG (MURMUR_CONTEXT.md §8-§9).
  * 1024-dim vectors (Voyage voyage-3.5 / mock) with an HNSW cosine index.
  */
 export const embeddings = pgTable(

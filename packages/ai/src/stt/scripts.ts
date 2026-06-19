@@ -63,7 +63,7 @@ export const SCRIPTS: Script[] = [
         speaker: 0,
         text: "And let's tell the team we approve before anything ships.",
       },
-      { speaker: 1, text: "Agreed — nothing goes out without sign-off." },
+      { speaker: 1, text: "Agreed - nothing goes out without sign-off." },
     ],
   },
   {

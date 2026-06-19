@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { StatusPill } from "@/components/app/status-pill";
 
-/** Processing view — polls status and refreshes when the pipeline finishes. */
+/** Processing view - polls status and refreshes when the pipeline finishes. */
 export function ProcessingPanel({
   recordingId,
   status,
@@ -55,7 +55,7 @@ export function ProcessingPanel({
   );
 }
 
-/** Failed view — shows the reason and a retry button. */
+/** Failed view - shows the reason and a retry button. */
 export function FailedPanel({
   recordingId,
   error,

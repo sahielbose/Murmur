@@ -77,7 +77,7 @@ export function DraftFollowupButton({
   const copy = async () => {
     const text = subject ? `Subject: ${subject}\n\n${body}` : body;
     await navigator.clipboard.writeText(text);
-    toast.success("Draft copied — send it whenever you're ready.");
+    toast.success("Draft copied - send it whenever you're ready.");
   };
 
   return (

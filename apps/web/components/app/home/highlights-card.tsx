@@ -45,7 +45,7 @@ export function HighlightsCard({ digest }: { digest: DigestView | null }) {
     try {
       await fetch(`/api/highlights/${id}/dismiss`, { method: "POST" });
     } catch {
-      /* optimistic — server reconciles on next load */
+      /* optimistic - server reconciles on next load */
     }
     router.refresh();
   };
@@ -108,7 +108,7 @@ export function HighlightsCard({ digest }: { digest: DigestView | null }) {
         </ul>
       ) : (
         <p className="text-sm text-fg-muted">
-          You&apos;re all caught up — nothing to revisit right now.
+          You&apos;re all caught up - nothing to revisit right now.
         </p>
       )}
     </section>

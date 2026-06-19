@@ -18,7 +18,7 @@ export function RecordingCard({ recording }: { recording: LibraryCard }) {
         ) : null}
       </div>
       <p className="text-xs text-fg-subtle">
-        {recording.recordedAt ? formatDate(recording.recordedAt) : "—"}
+        {recording.recordedAt ? formatDate(recording.recordedAt) : "-"}
         {" · "}
         {formatDuration(recording.durationSec)}
       </p>

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * Murmur mark — four ascending soundwave bars (geometric, flat, single ink).
+ * Murmur mark - four ascending soundwave bars (geometric, flat, single ink).
  * Reads at 24px (MURMUR_UI.md §2).
  */
 export function MurmurGlyph({ className }: { className?: string }) {

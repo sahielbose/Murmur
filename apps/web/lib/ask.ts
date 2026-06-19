@@ -58,7 +58,7 @@ export async function retrieveContext(
   const db = getDb();
   const queryVec = await getEmbeddings().embedOne(question);
   // An all-zero query vector (e.g. an all-stopword question) makes
-  // cosineDistance NaN and returns arbitrary chunks — skip retrieval instead.
+  // cosineDistance NaN and returns arbitrary chunks - skip retrieval instead.
   if (queryVec.every((v) => v === 0)) return [];
 
   const filters = [eq(embeddings.userId, userId), isNull(recordings.deletedAt)];

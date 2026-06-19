@@ -4,7 +4,7 @@ import { processRecording } from "./functions/process-recording";
 import { dailyHighlights } from "./functions/daily-highlights";
 
 /**
- * @murmur/jobs — Inngest functions: the recording-processing pipeline and the
+ * @murmur/jobs - Inngest functions: the recording-processing pipeline and the
  * scheduled resurfacing jobs (MURMUR_CONTEXT.md §7). The functions array is
  * served by the app's `/api/inngest` route.
  */

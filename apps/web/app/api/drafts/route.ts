@@ -11,7 +11,7 @@ type Body = {
 
 /**
  * Generate a follow-up draft for review. APPROVAL-GATED: this only returns the
- * draft text — Murmur never sends anything on the user's behalf
+ * draft text - Murmur never sends anything on the user's behalf
  * (MURMUR_CONTEXT.md §11). Sending is a manual, integration-gated action.
  */
 export async function POST(req: NextRequest) {

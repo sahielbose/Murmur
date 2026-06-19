@@ -4,7 +4,7 @@ import { runPipeline } from "./pipeline/run";
 /**
  * Kick off processing for a new recording. Uses the durable Inngest path when
  * configured (cloud / dev server via USE_INNGEST), otherwise runs the pipeline
- * inline in the background — which works on a long-running dev server in the
+ * inline in the background - which works on a long-running dev server in the
  * secret-free build with no Inngest dev server required.
  */
 export async function enqueueProcessing(recordingId: string): Promise<void> {

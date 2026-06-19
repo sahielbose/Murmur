@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const TEAM_SIZES = ["1–10", "11–50", "51–200", "200+"];
+const TEAM_SIZES = ["1-10", "11-50", "51-200", "200+"];
 
 export function LeadForm() {
   const [name, setName] = useState("");
@@ -47,7 +47,7 @@ export function LeadForm() {
           <Check className="h-5 w-5" />
         </span>
         <h2 className="mt-4 font-serif text-2xl tracking-tight text-fg-strong">
-          Thanks — we&apos;ll be in touch.
+          Thanks - we&apos;ll be in touch.
         </h2>
         <p className="mt-2 text-fg-muted">
           A member of our team will reach out to {email} shortly.

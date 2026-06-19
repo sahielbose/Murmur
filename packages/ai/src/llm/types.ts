@@ -58,7 +58,7 @@ export type DraftInput = {
   seed?: string;
 };
 
-/** A generated draft. Always returned for review — never sent automatically. */
+/** A generated draft. Always returned for review - never sent automatically. */
 export type DraftResult = {
   subject: string | null;
   body: string;
@@ -75,6 +75,6 @@ export interface LlmProvider {
   extractActionItems(input: GenerationInput): Promise<ActionItemsResult>;
   mindMap(input: GenerationInput): Promise<MindMapResult>;
   ask(input: AskInput): Promise<AskResult>;
-  /** Draft a follow-up to review. Approval-gated — the caller never auto-sends. */
+  /** Draft a follow-up to review. Approval-gated - the caller never auto-sends. */
   draft(input: DraftInput): Promise<DraftResult>;
 }

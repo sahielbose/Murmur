@@ -167,7 +167,7 @@ export const mockLlm: LlmProvider = {
     if (input.kind === "message") {
       return {
         subject: null,
-        body: `Hi ${recipient} — quick follow-up${source}: I said I'd ${lower}. Wanted to flag it's on my list — I'll take care of it shortly. Anything you need from me first?`,
+        body: `Hi ${recipient} - quick follow-up${source}: I said I'd ${lower}. Wanted to flag it's on my list - I'll take care of it shortly. Anything you need from me first?`,
         model: MODEL,
       };
     }

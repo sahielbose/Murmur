@@ -3,7 +3,7 @@ import { generateDailyDigests } from "../pipeline/digest";
 
 /**
  * Daily resurfacing job (MURMUR_CONTEXT.md §10): each morning, build every
- * user's digest of commitments to revisit. Surfacing only — any outbound nudge
+ * user's digest of commitments to revisit. Surfacing only - any outbound nudge
  * (email/push) stays approval-gated and is wired with the real providers later.
  */
 export const dailyHighlights = inngest.createFunction(

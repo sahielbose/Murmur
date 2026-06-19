@@ -28,7 +28,7 @@ export default function LoginPage() {
           </Button>
         </form>
         <p className="mt-4 text-center text-xs text-fg-muted">
-          Dev mode — any email signs you in. Real auth arrives in Phase 18.
+          Dev mode - any email signs you in. Real auth arrives in Phase 18.
         </p>
       </div>
     </main>

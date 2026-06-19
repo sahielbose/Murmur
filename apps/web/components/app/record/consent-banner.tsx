@@ -40,7 +40,7 @@ export function ConsentBanner({
           <DialogTitle>Before you record</DialogTitle>
           <DialogDescription>
             Recording laws vary by location, and many require everyone&apos;s
-            consent. You&apos;re responsible for getting it — Murmur shows this
+            consent. You&apos;re responsible for getting it - Murmur shows this
             reminder once, and is a tool rather than legal advice.
           </DialogDescription>
         </DialogHeader>
@@ -60,7 +60,7 @@ export function ConsentBanner({
           <Button variant="secondary" onClick={onCancel}>
             Cancel
           </Button>
-          <Button onClick={() => onConfirm(informed)}>Got it — start</Button>
+          <Button onClick={() => onConfirm(informed)}>Got it - start</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

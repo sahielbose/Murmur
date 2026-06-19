@@ -9,7 +9,7 @@ const TILES: { caption: string; Icon: LucideIcon; wide?: boolean }[] = [
 
 /**
  * "The important conversations happen out loud." (MURMUR_UI.md §7, §13).
- * De-hardware'd ImageCluster — coded monochrome tiles, not photos.
+ * De-hardware'd ImageCluster - coded monochrome tiles, not photos.
  */
 export function InPerson() {
   return (
@@ -21,7 +21,7 @@ export function InPerson() {
           </h2>
           <p className="mt-5 max-w-md text-lg leading-relaxed text-fg-muted">
             The pen was the only tool that worked away from a screen. Murmur is
-            the upgrade — hit record, stay in the moment, and get every detail
+            the upgrade - hit record, stay in the moment, and get every detail
             back as notes.
           </p>
         </div>

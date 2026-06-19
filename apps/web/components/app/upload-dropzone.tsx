@@ -111,7 +111,7 @@ export function UploadDropzone() {
         const result = (await finalizeRes.json()) as { id?: string };
 
         setStatus("done");
-        toast.success("Uploaded — Murmur is processing your recording.");
+        toast.success("Uploaded - Murmur is processing your recording.");
         if (result.id) {
           router.push(`/app/recordings/${result.id}`);
         }
@@ -180,7 +180,7 @@ export function UploadDropzone() {
                 : "Drop an audio file, or click to choose"}
           </p>
           <p className="mt-1 text-sm text-fg-muted">
-            mp3, m4a, wav, aac, ogg, webm — or a video to extract audio from.
+            mp3, m4a, wav, aac, ogg, webm - or a video to extract audio from.
           </p>
         </div>
         <input

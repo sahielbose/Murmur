@@ -6,7 +6,7 @@ import type { RecorderState } from "./use-audio-recorder";
 // Original canned phrases for the mock live view. The authoritative transcript
 // is produced by the batch pass after the recording stops.
 const PHRASES = [
-  "Thanks for hopping on — let's start with where things stand.",
+  "Thanks for hopping on - let's start with where things stand.",
   "We're mostly on track. The one risk is the timeline for next week.",
   "What would help de-risk it?",
   "A quick review tomorrow, then I'll send the summary.",
@@ -15,7 +15,7 @@ const PHRASES = [
 
 /**
  * Live transcript view (MURMUR_UI.md §10.2). Streams mock partials while
- * recording — interim text is muted, finalized lines use `--fg`. Resets on a
+ * recording - interim text is muted, finalized lines use `--fg`. Resets on a
  * fresh recording, freezes on pause.
  */
 export function LiveTranscript({ state }: { state: RecorderState }) {

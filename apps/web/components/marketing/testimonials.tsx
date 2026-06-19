@@ -16,14 +16,14 @@ const QUOTES = [
   },
   {
     quote:
-      "Intake, prep, the lot — every conversation searchable down to the exact sentence.",
+      "Intake, prep, the lot - every conversation searchable down to the exact sentence.",
     role: "Litigation associate",
   },
 ];
 
 /**
  * "Built for people who can't miss a word." (MURMUR_UI.md §7, §13). Generic
- * role attributions only — no invented names or logos.
+ * role attributions only - no invented names or logos.
  */
 export function Testimonials() {
   return (

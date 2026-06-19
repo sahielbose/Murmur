@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { LiveDemo } from "./live-demo";
 
 /**
- * Hero — black full-bleed (MURMUR_UI.md §7). Eyebrow → display headline → sub →
+ * Hero - black full-bleed (MURMUR_UI.md §7). Eyebrow → display headline → sub →
  * CTAs, with the coded live-demo panel as the centerpiece. Copy from §13.
  */
 export function Hero({ isAuthed }: { isAuthed: boolean }) {
@@ -17,8 +17,8 @@ export function Hero({ isAuthed }: { isAuthed: boolean }) {
           Remember every conversation.
         </h1>
         <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/70">
-          Murmur listens to the conversations that matter — meetings, calls,
-          appointments — and turns them into clean notes, to-dos, and answers.
+          Murmur listens to the conversations that matter - meetings, calls,
+          appointments - and turns them into clean notes, to-dos, and answers.
           Right in your browser.
         </p>
         <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">

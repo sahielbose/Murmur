@@ -153,7 +153,7 @@ export async function semanticSearch(
 ): Promise<SearchResult[]> {
   const db = getDb();
   const queryVec = await getEmbeddings().embedOne(q);
-  // An all-zero query vector yields NaN distances / arbitrary rows — bail out.
+  // An all-zero query vector yields NaN distances / arbitrary rows - bail out.
   if (queryVec.every((v) => v === 0)) return [];
   const similarity = sql<number>`1 - (${cosineDistance(embeddings.embedding, queryVec)})`;
 

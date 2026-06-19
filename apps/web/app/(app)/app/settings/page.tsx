@@ -8,9 +8,9 @@ import {
 } from "@/components/app/settings/settings-form";
 
 const PLAN_COPY: Record<string, string> = {
-  free: "Free — 10 Ask questions a day and your last few recordings.",
-  pro: "Pro — unlimited Ask, full history, and priority processing.",
-  enterprise: "Enterprise — SSO, shared workspaces, and custom retention.",
+  free: "Free - 10 Ask questions a day and your last few recordings.",
+  pro: "Pro - unlimited Ask, full history, and priority processing.",
+  enterprise: "Enterprise - SSO, shared workspaces, and custom retention.",
 };
 
 function Section({

@@ -12,7 +12,7 @@ import {
 
 /**
  * Plain sequential orchestrator mirroring the Inngest `processRecording`
- * function — used for direct invocation and end-to-end verification without the
+ * function - used for direct invocation and end-to-end verification without the
  * durable runtime. Each step is idempotent (delete-then-insert), so re-running
  * is safe; on error the recording is flagged `failed` with a reason.
  */

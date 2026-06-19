@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 /**
- * Scroll reveal — fade + settle up as the block enters the viewport
+ * Scroll reveal - fade + settle up as the block enters the viewport
  * (MURMUR_UI.md §12). A scroll/IntersectionObserver trigger drives the reveal
  * for real users; an unconditional safety timer guarantees content is never
  * left hidden if those don't fire. Honours prefers-reduced-motion.

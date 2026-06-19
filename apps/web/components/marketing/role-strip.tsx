@@ -8,7 +8,7 @@ const ROLES = [
 ];
 
 /**
- * Honest social proof (MURMUR_UI.md §7, §13). No fake corporate logos — a role
+ * Honest social proof (MURMUR_UI.md §7, §13). No fake corporate logos - a role
  * strip instead.
  */
 export function RoleStrip() {

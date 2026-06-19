@@ -20,7 +20,7 @@ const CATEGORIES = [
       },
       {
         q: "How do I start a recording?",
-        a: "Open Murmur, click Record, and allow microphone access. Click again to stop — your notes are ready moments later.",
+        a: "Open Murmur, click Record, and allow microphone access. Click again to stop - your notes are ready moments later.",
       },
       {
         q: "Can Murmur tell who said what?",
@@ -28,7 +28,7 @@ const CATEGORIES = [
       },
       {
         q: "What do I get after a recording?",
-        a: "A full transcript, a summary in the style you choose, a list of action items, and a mind map — all searchable.",
+        a: "A full transcript, a summary in the style you choose, a list of action items, and a mind map - all searchable.",
       },
     ],
   },
@@ -42,7 +42,7 @@ const CATEGORIES = [
       },
       {
         q: "About recording consent.",
-        a: "Recording laws vary by location and many require everyone's consent. You're responsible for getting it — Murmur shows a reminder before your first recording.",
+        a: "Recording laws vary by location and many require everyone's consent. You're responsible for getting it - Murmur shows a reminder before your first recording.",
       },
     ],
   },

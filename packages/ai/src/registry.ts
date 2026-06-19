@@ -9,14 +9,14 @@ import type { Storage } from "./storage/types";
 
 function warnFallback(kind: string, requested: string) {
   console.warn(
-    `[murmur/ai] ${kind} provider "${requested}" is not wired yet — using the mock. TODO: implement in Phase 18–19.`,
+    `[murmur/ai] ${kind} provider "${requested}" is not wired yet - using the mock. TODO: implement in Phase 18-19.`,
   );
 }
 
 /**
  * Provider registry (MURMUR_CONTEXT.md §5). Each getter reads its env switch and
  * returns the selected adapter, falling back to the mock when a real provider is
- * requested but unavailable — so the app always boots.
+ * requested but unavailable - so the app always boots.
  */
 export function getStt(): SttProvider {
   const provider = process.env.STT_PROVIDER ?? "mock";

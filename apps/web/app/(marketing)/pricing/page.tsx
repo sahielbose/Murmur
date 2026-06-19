@@ -1,6 +1,6 @@
 import { PricingTable } from "@/components/marketing/pricing-table";
 
-export const metadata = { title: "Pricing — Murmur" };
+export const metadata = { title: "Pricing - Murmur" };
 
 export default function PricingPage() {
   return (

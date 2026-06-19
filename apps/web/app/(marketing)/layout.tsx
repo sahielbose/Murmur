@@ -4,7 +4,7 @@ import { Footer } from "@/components/marketing/footer";
 import { getSession } from "@/lib/auth";
 
 /**
- * Marketing shell — sticky TopNav, content, Footer. The CTA is state-aware: it
+ * Marketing shell - sticky TopNav, content, Footer. The CTA is state-aware: it
  * reads the (mock) session so logged-in visitors see "Open app".
  */
 export default async function MarketingLayout({

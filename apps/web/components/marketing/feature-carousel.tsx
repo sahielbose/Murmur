@@ -76,7 +76,7 @@ const FEATURES: {
 }[] = [
   {
     title: "Turn talk into action.",
-    body: "Murmur drafts the follow-up email, adds the to-dos, and queues the messages. You review and approve — it sends.",
+    body: "Murmur drafts the follow-up email, adds the to-dos, and queues the messages. You review and approve - it sends.",
     Icon: PenLine,
     preview: <ActionPreview />,
   },
@@ -88,7 +88,7 @@ const FEATURES: {
   },
   {
     title: "Summaries that fit how you work.",
-    body: "Pick a style — meeting notes, a doctor's visit, a sales call — and regenerate anytime.",
+    body: "Pick a style - meeting notes, a doctor's visit, a sales call - and regenerate anytime.",
     Icon: FileText,
     preview: <SummaryPreview />,
   },

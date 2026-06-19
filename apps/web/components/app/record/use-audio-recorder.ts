@@ -21,7 +21,7 @@ export type RecorderError =
 export type UseAudioRecorder = {
   state: RecorderState;
   error: RecorderError | null;
-  /** Live MediaStream while recording — drives the waveform analyser. */
+  /** Live MediaStream while recording - drives the waveform analyser. */
   stream: MediaStream | null;
   devices: MicDevice[];
   deviceId: string | null;
@@ -75,7 +75,7 @@ export function useAudioRecorder(): UseAudioRecorder {
       setDevices(mics);
       setDeviceId((cur) => cur ?? mics[0]?.deviceId ?? null);
     } catch {
-      // enumeration can fail before permission is granted — ignore.
+      // enumeration can fail before permission is granted - ignore.
     }
   }, []);
 

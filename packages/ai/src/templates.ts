@@ -28,7 +28,7 @@ export const SYSTEM_TEMPLATES: SystemTemplate[] = [
   {
     key: "medical-visit",
     name: "Medical visit",
-    description: "Notes from an appointment — information, not advice.",
+    description: "Notes from an appointment - information, not advice.",
     promptBody:
       "Summarize a medical visit as information, not advice. List the notes, what the clinician said, and follow-ups. Add a reminder to consult a professional and flag anything urgent.",
   },

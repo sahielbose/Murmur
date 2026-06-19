@@ -1,5 +1,5 @@
 /**
- * @murmur/mcp — the OpenSwarm MCP server exposing capture / recall /
+ * @murmur/mcp - the OpenSwarm MCP server exposing capture / recall /
  * summarize over Murmur's REST surface. Built in Phase 20
  * (MURMUR_CONTEXT.md §11).
  */

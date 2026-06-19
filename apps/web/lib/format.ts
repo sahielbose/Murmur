@@ -1,5 +1,5 @@
 export function formatDuration(totalSec?: number | null): string {
-  if (!totalSec || totalSec <= 0) return "—";
+  if (!totalSec || totalSec <= 0) return "-";
   const h = Math.floor(totalSec / 3600);
   const m = Math.floor((totalSec % 3600) / 60);
   const s = totalSec % 60;
@@ -18,7 +18,7 @@ export function formatDate(d?: Date | string | null): string {
   });
 }
 
-/** mm:ss (or h:mm:ss) from a millisecond offset — used by transcript + player. */
+/** mm:ss (or h:mm:ss) from a millisecond offset - used by transcript + player. */
 export function formatTimestamp(ms: number): string {
   const total = Math.floor(ms / 1000);
   const h = Math.floor(total / 3600);

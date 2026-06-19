@@ -68,8 +68,8 @@ export function SpeakersManager({ speakers }: { speakers: SpeakerItem[] }) {
         ))}
       </ul>
       <p className="mt-3 text-xs text-fg-subtle">
-        Voice prints — automatically recognizing recurring speakers across
-        recordings — arrive with the real speech provider.
+        Voice prints - automatically recognizing recurring speakers across
+        recordings - arrive with the real speech provider.
       </p>
     </div>
   );

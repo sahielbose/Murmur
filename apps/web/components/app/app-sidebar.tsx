@@ -72,7 +72,7 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-/** Shared sidebar body — used by the desktop rail and the mobile drawer. */
+/** Shared sidebar body - used by the desktop rail and the mobile drawer. */
 export function AppSidebarContent({
   user = DEFAULT_USER,
   onNavigate,

@@ -64,7 +64,7 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
         source: "mic",
         contentType: blob.type,
       });
-      toast.success("Saved — Murmur is processing your recording.");
+      toast.success("Saved - Murmur is processing your recording.");
       if (result.id) router.push(`/app/recordings/${result.id}`);
     } catch {
       toast.error("Could not save the recording.");
@@ -190,7 +190,7 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
               : rec.state === "requesting"
                 ? "Allow microphone access to start."
                 : rec.state === "recording"
-                  ? "Listening — tap the orb to stop."
+                  ? "Listening - tap the orb to stop."
                   : rec.state === "paused"
                     ? "Paused"
                     : rec.state === "stopping"

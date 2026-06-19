@@ -17,7 +17,7 @@ export function getDb() {
 
 export type Database = ReturnType<typeof getDb>;
 
-/** Ergonomic lazy handle — `db.select()...` initializes the client on first access. */
+/** Ergonomic lazy handle - `db.select()...` initializes the client on first access. */
 export const db: Database = new Proxy({} as Database, {
   get(_target, prop) {
     const real = getDb() as unknown as Record<string | symbol, unknown>;
