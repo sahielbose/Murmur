@@ -27,6 +27,7 @@ export default function SignupPage() {
           <Input
             name="email"
             type="email"
+            required
             placeholder="you@example.com"
             aria-label="Email"
             autoComplete="email"

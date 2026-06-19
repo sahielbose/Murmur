@@ -3,6 +3,7 @@ import { getDb, recordings } from "@murmur/db";
 import { getStorage } from "@murmur/ai";
 import { enqueueProcessing } from "@murmur/jobs";
 import { getDbUser } from "@/lib/current-user";
+import { getSession } from "@/lib/auth";
 import { isAcceptedAudio } from "@/lib/audio";
 
 type FinalizeBody = {
@@ -31,6 +32,12 @@ export async function POST(req: NextRequest) {
       { error: "unsupported file type" },
       { status: 400 },
     );
+  }
+  // The object key must live under the caller's own namespace (no cross-user
+  // finalize of someone else's uploaded object).
+  const session = await getSession();
+  if (!session || !body.key.startsWith(`audio/${session.user.id}/`)) {
+    return NextResponse.json({ error: "forbidden key" }, { status: 403 });
   }
   if (!(await getStorage().exists(body.key))) {
     return NextResponse.json(

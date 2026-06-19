@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { and, eq, getDb, recordings } from "@murmur/db";
+import { and, eq, isNull, getDb, recordings } from "@murmur/db";
 import { getDbUser } from "@/lib/current-user";
 import { getRecordingForUser } from "@/lib/recordings";
 
@@ -52,7 +52,13 @@ export async function PATCH(
   const [rec] = await getDb()
     .update(recordings)
     .set(updates)
-    .where(and(eq(recordings.id, id), eq(recordings.userId, user.id)))
+    .where(
+      and(
+        eq(recordings.id, id),
+        eq(recordings.userId, user.id),
+        isNull(recordings.deletedAt),
+      ),
+    )
     .returning();
 
   if (!rec) {

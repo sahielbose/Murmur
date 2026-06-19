@@ -23,6 +23,10 @@ export async function POST(
   const db = getDb();
 
   let tagId = body.tagId ?? null;
+  // A directly-supplied tagId must belong to this user (no cross-user attach).
+  if (tagId && !(await getTagForUser(user.id, tagId))) {
+    return NextResponse.json({ error: "tag not found" }, { status: 404 });
+  }
   if (!tagId && body.name?.trim()) {
     const name = body.name.trim();
     const [created] = await db

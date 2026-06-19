@@ -18,6 +18,8 @@ export async function getDbUser(): Promise<User | null> {
     .limit(1);
   if (existing) return existing;
 
+  // Idempotent create: concurrent first-requests for a new email race on the
+  // unique(email) constraint, so no-op on conflict and re-select the winner.
   const [created] = await db
     .insert(users)
     .values({
@@ -25,8 +27,16 @@ export async function getDbUser(): Promise<User | null> {
       name: session.user.name,
       plan: session.user.plan,
     })
+    .onConflictDoNothing({ target: users.email })
     .returning();
-  return created ?? null;
+  if (created) return created;
+
+  const [row] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, session.user.email))
+    .limit(1);
+  return row ?? null;
 }
 
 export async function requireDbUser(): Promise<User> {
