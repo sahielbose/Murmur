@@ -27,4 +27,7 @@ export {
   isNull,
   isNotNull,
   count,
+  cosineDistance,
+  l2Distance,
+  innerProduct,
 } from "drizzle-orm";

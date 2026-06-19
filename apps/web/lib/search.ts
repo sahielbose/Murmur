@@ -3,11 +3,15 @@ import {
   eq,
   ilike,
   isNull,
+  sql,
+  cosineDistance,
   getDb,
   recordings,
   transcriptSegments,
   summaries,
+  embeddings,
 } from "@murmur/db";
+import { getEmbeddings } from "@murmur/ai";
 
 export type SearchKind = "title" | "transcript" | "summary" | "semantic";
 
@@ -117,4 +121,44 @@ export async function keywordSearch(
   }
 
   return results;
+}
+
+/** Semantic search via pgvector cosine similarity over the chunk embeddings. */
+export async function semanticSearch(
+  userId: string,
+  q: string,
+  limit = 8,
+): Promise<SearchResult[]> {
+  const db = getDb();
+  const queryVec = await getEmbeddings().embedOne(q);
+  const similarity = sql<number>`1 - (${cosineDistance(embeddings.embedding, queryVec)})`;
+
+  const rows = await db
+    .select({
+      recordingId: embeddings.recordingId,
+      title: recordings.title,
+      chunkText: embeddings.chunkText,
+      startMs: transcriptSegments.startMs,
+      similarity,
+    })
+    .from(embeddings)
+    .innerJoin(recordings, eq(embeddings.recordingId, recordings.id))
+    .leftJoin(
+      transcriptSegments,
+      eq(embeddings.segmentId, transcriptSegments.id),
+    )
+    .where(and(eq(embeddings.userId, userId), isNull(recordings.deletedAt)))
+    .orderBy(cosineDistance(embeddings.embedding, queryVec))
+    .limit(limit);
+
+  return rows
+    .filter((r) => r.similarity > 0.12)
+    .map((r) => ({
+      recordingId: r.recordingId,
+      recordingTitle: r.title,
+      kind: "semantic" as const,
+      snippet: cleanSnippet(r.chunkText),
+      startMs: r.startMs ?? null,
+      score: Number(r.similarity),
+    }));
 }
