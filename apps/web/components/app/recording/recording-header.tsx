@@ -5,8 +5,9 @@ import { Check, Pencil } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { formatDate, formatDuration } from "@/lib/format";
-import { TagPill, type TagLike } from "@/components/app/tag-pill";
+import { type TagLike } from "@/components/app/tag-pill";
 import { StatusPill } from "@/components/app/status-pill";
+import { TagEditor } from "./tag-editor";
 
 export type HeaderRecording = {
   id: string;
@@ -20,9 +21,11 @@ export type HeaderRecording = {
 export function RecordingHeader({
   recording,
   tags,
+  allTags,
 }: {
   recording: HeaderRecording;
   tags: TagLike[];
+  allTags: TagLike[];
 }) {
   const [title, setTitle] = useState(recording.title);
   const [editing, setEditing] = useState(false);
@@ -98,16 +101,12 @@ export function RecordingHeader({
         ) : null}
         <span aria-hidden>·</span>
         <span>{formatDuration(recording.durationSec)}</span>
-        {tags.length > 0 ? (
-          <>
-            <span aria-hidden>·</span>
-            <span className="flex flex-wrap items-center gap-1.5">
-              {tags.map((t) => (
-                <TagPill key={t.id} tag={t} />
-              ))}
-            </span>
-          </>
-        ) : null}
+        <span aria-hidden>·</span>
+        <TagEditor
+          recordingId={recording.id}
+          initialTags={tags}
+          allTags={allTags}
+        />
       </div>
     </div>
   );

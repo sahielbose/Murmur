@@ -8,6 +8,7 @@ import {
   getTranscript,
 } from "@/lib/recordings";
 import { listTemplatesForUser } from "@/lib/templates";
+import { listTagsForUser } from "@/lib/tags";
 import { getActionItemsForRecording } from "@/lib/action-items";
 import { MindMapTab } from "@/components/app/recording/mind-map-tab";
 import { SummaryTab } from "@/components/app/recording/summary-tab";
@@ -38,6 +39,7 @@ export default async function RecordingDetailPage({
   const recording = await getRecordingForUser(user.id, id);
   if (!recording) notFound();
   const tags = await getRecordingTags(id);
+  const allTags = await listTagsForUser(user.id);
   const summary = await getPrimarySummary(id);
   const transcript = await getTranscript(id);
   const templates = await listTemplatesForUser(user.id);
@@ -60,6 +62,11 @@ export default async function RecordingDetailPage({
             recordedAt: recording.recordedAt?.toISOString() ?? null,
           }}
           tags={tags.map((t) => ({ id: t.id, name: t.name, color: t.color }))}
+          allTags={allTags.map((t) => ({
+            id: t.id,
+            name: t.name,
+            color: t.color,
+          }))}
         />
         <div className="mt-6">
           <AudioPlayerBar />
