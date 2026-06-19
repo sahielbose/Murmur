@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
 import type { MindMapGraph } from "@murmur/db";
 import { layoutMindMap, type PositionedNode } from "@/lib/mindmap-layout";
@@ -20,6 +21,8 @@ export function MindMapCanvas({ graph }: { graph: MindMapGraph }) {
     null,
   );
   const containerRef = useRef<HTMLDivElement>(null);
+  const [panning, setPanning] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   // Center the graph in the viewport on mount / when the graph changes.
   useEffect(() => {
@@ -39,6 +42,7 @@ export function MindMapCanvas({ graph }: { graph: MindMapGraph }) {
   const onPointerDown = (e: React.PointerEvent) => {
     (e.target as Element).setPointerCapture?.(e.pointerId);
     drag.current = { x: e.clientX, y: e.clientY, tx, ty };
+    setPanning(true);
   };
   const onPointerMove = (e: React.PointerEvent) => {
     if (!drag.current) return;
@@ -47,6 +51,7 @@ export function MindMapCanvas({ graph }: { graph: MindMapGraph }) {
   };
   const onPointerUp = () => {
     drag.current = null;
+    setPanning(false);
   };
   const onWheel = (e: React.WheelEvent) => {
     const next = Math.min(2.5, Math.max(0.4, scale - e.deltaY * 0.001));
@@ -58,9 +63,11 @@ export function MindMapCanvas({ graph }: { graph: MindMapGraph }) {
   return (
     <div
       ref={containerRef}
-      className="relative h-[440px] overflow-hidden rounded-lg border border-border bg-bg-subtle"
+      className="relative h-80 overflow-hidden rounded-lg border border-border bg-bg-subtle md:h-[440px]"
     >
       <svg
+        role="img"
+        aria-label="Mind map of the conversation. Drag to pan, scroll to zoom."
         className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -68,7 +75,13 @@ export function MindMapCanvas({ graph }: { graph: MindMapGraph }) {
         onPointerLeave={onPointerUp}
         onWheel={onWheel}
       >
-        <g transform={`translate(${tx},${ty}) scale(${scale})`}>
+        <g
+          style={{
+            transform: `translate(${tx}px,${ty}px) scale(${scale})`,
+            transition:
+              reduceMotion || panning ? "none" : "transform 150ms var(--ease)",
+          }}
+        >
           {layout.edges.map((e, i) => {
             const a = nodeById.get(e.from);
             const b = nodeById.get(e.to);
