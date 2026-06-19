@@ -1,7 +1,7 @@
 import { getDbUser } from "@/lib/current-user";
 import { listLibrary } from "@/lib/recordings";
 import { PageHeader } from "@/components/app/page-header";
-import { RecordingCard } from "@/components/app/recording-card";
+import { LibraryView } from "@/components/app/library-view";
 
 export default async function LibraryPage() {
   const user = await getDbUser();
@@ -13,17 +13,15 @@ export default async function LibraryPage() {
         title="Library"
         description="Every conversation you've captured."
       />
-      {recordings.length === 0 ? (
-        <p className="mt-8 text-sm text-fg-muted">
-          No recordings yet. Start one, or upload a file.
-        </p>
-      ) : (
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {recordings.map((r) => (
-            <RecordingCard key={r.id} recording={r} />
-          ))}
-        </div>
-      )}
+      <div className="mt-6">
+        {recordings.length === 0 ? (
+          <p className="text-sm text-fg-muted">
+            No recordings yet. Start one, or upload a file.
+          </p>
+        ) : (
+          <LibraryView recordings={recordings} />
+        )}
+      </div>
     </main>
   );
 }
