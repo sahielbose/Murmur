@@ -6,3 +6,4 @@
 export * from "./stt/types";
 export * from "./llm/types";
 export * from "./embeddings/types";
+export * from "./storage/types";
