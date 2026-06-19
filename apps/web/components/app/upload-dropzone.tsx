@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
+import { validateUpload } from "@/lib/audio";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
@@ -62,6 +63,19 @@ export function UploadDropzone() {
     async (file: File) => {
       setError(null);
       setFileName(file.name);
+
+      const valid = validateUpload({
+        filename: file.name,
+        contentType: file.type,
+        size: file.size,
+      });
+      if (!valid.ok) {
+        setStatus("error");
+        setError(valid.reason);
+        toast.error(valid.reason);
+        return;
+      }
+
       setStatus("uploading");
       setProgress(0);
 
@@ -69,7 +83,11 @@ export function UploadDropzone() {
         const res = await fetch("/api/recordings/upload-url", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ filename: file.name, contentType: file.type }),
+          body: JSON.stringify({
+            filename: file.name,
+            contentType: file.type,
+            size: file.size,
+          }),
         });
         if (!res.ok) throw new Error("Could not start the upload.");
         const { key, uploadUrl } = (await res.json()) as {

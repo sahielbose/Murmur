@@ -3,6 +3,7 @@ import { getDb, recordings } from "@murmur/db";
 import { getStorage } from "@murmur/ai";
 import { enqueueProcessing } from "@murmur/jobs";
 import { getDbUser } from "@/lib/current-user";
+import { isAcceptedAudio } from "@/lib/audio";
 
 type FinalizeBody = {
   key?: string;
@@ -24,6 +25,12 @@ export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as FinalizeBody;
   if (!body.key) {
     return NextResponse.json({ error: "key is required" }, { status: 400 });
+  }
+  if (!isAcceptedAudio(body.key)) {
+    return NextResponse.json(
+      { error: "unsupported file type" },
+      { status: 400 },
+    );
   }
   if (!(await getStorage().exists(body.key))) {
     return NextResponse.json(

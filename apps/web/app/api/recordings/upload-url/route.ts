@@ -2,8 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID } from "node:crypto";
 import { getStorage } from "@murmur/ai";
 import { getSession } from "@/lib/auth";
-
-const EXT_RE = /\.([a-z0-9]+)$/i;
+import { validateUpload, extensionOf } from "@/lib/audio";
 
 /**
  * Issue an upload target for a new audio object (MURMUR_CONTEXT.md §9). Returns
@@ -18,9 +17,20 @@ export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as {
     filename?: string;
     contentType?: string;
+    size?: number;
   };
   const filename = (body.filename ?? "audio").trim();
-  const ext = EXT_RE.exec(filename)?.[1]?.toLowerCase() ?? "webm";
+
+  const valid = validateUpload({
+    filename,
+    contentType: body.contentType,
+    size: body.size,
+  });
+  if (!valid.ok) {
+    return NextResponse.json({ error: valid.reason }, { status: 400 });
+  }
+
+  const ext = extensionOf(filename) ?? "webm";
   const key = `audio/${session.user.id}/${randomUUID()}.${ext}`;
 
   const signed = await getStorage().getUploadUrl(key, body.contentType);
