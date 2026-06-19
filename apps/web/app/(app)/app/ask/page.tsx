@@ -1,12 +1,9 @@
-import { PageHeader } from "@/components/app/page-header";
+import { AskChat } from "@/components/app/ask/ask-chat";
 
 export default function AskPage() {
   return (
-    <main className="flex-1 p-6 md:p-8">
-      <PageHeader
-        title="Ask Murmur"
-        description="Ask questions across your recordings and get answers that link straight to the moment."
-      />
+    <main className="flex min-h-0 flex-1 flex-col">
+      <AskChat initialThreads={[]} />
     </main>
   );
 }
