@@ -87,7 +87,15 @@ export function MindMapCanvas({ graph }: { graph: MindMapGraph }) {
           })}
           {layout.nodes.map((n) => {
             const w = nodeWidth(n);
-            const h = 34;
+            const h = n.level === 0 ? 38 : 32;
+            const fill =
+              n.level === 0
+                ? "fill-[var(--fg-strong)] stroke-none"
+                : n.level === 1
+                  ? "fill-[var(--bg)] stroke-[var(--border-strong)]"
+                  : "fill-[var(--bg-elevated)] stroke-[var(--border)]";
+            const textFill =
+              n.level === 0 ? "fill-[var(--fg-inverse)]" : "fill-[var(--fg)]";
             return (
               <g
                 key={n.id}
@@ -96,12 +104,8 @@ export function MindMapCanvas({ graph }: { graph: MindMapGraph }) {
                 <rect
                   width={w}
                   height={h}
-                  rx={8}
-                  className={cn(
-                    n.level === 0
-                      ? "fill-[var(--fg-strong)] stroke-none"
-                      : "fill-[var(--bg)] stroke-[var(--border-strong)]",
-                  )}
+                  rx={n.level === 0 ? 10 : 8}
+                  className={fill}
                   strokeWidth={1}
                 />
                 <text
@@ -109,10 +113,9 @@ export function MindMapCanvas({ graph }: { graph: MindMapGraph }) {
                   y={h / 2 + 4}
                   textAnchor="middle"
                   className={cn(
-                    "select-none text-[12px]",
-                    n.level === 0
-                      ? "fill-[var(--fg-inverse)]"
-                      : "fill-[var(--fg)]",
+                    "select-none",
+                    n.level === 0 ? "text-[13px] font-medium" : "text-[12px]",
+                    textFill,
                   )}
                 >
                   {n.label}
