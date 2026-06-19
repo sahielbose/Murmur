@@ -4,6 +4,10 @@ import { getRecordingForUser, getRecordingTags } from "@/lib/recordings";
 import { RecordingHeader } from "@/components/app/recording/recording-header";
 import { RecordingAudioProvider } from "@/components/app/recording/recording-audio-provider";
 import { AudioPlayerBar } from "@/components/app/recording/audio-player-bar";
+import {
+  RecordingTabs,
+  TabPlaceholder,
+} from "@/components/app/recording/recording-tabs";
 
 export default async function RecordingDetailPage({
   params,
@@ -36,6 +40,16 @@ export default async function RecordingDetailPage({
         />
         <div className="mt-6">
           <AudioPlayerBar />
+        </div>
+        <div className="mt-8">
+          <RecordingTabs
+            summary={<TabPlaceholder>Summary appears here.</TabPlaceholder>}
+            transcript={
+              <TabPlaceholder>Transcript appears here.</TabPlaceholder>
+            }
+            actions={<TabPlaceholder>Action items appear here.</TabPlaceholder>}
+            mindMap={<TabPlaceholder>Mind map appears here.</TabPlaceholder>}
+          />
         </div>
       </RecordingAudioProvider>
     </main>
