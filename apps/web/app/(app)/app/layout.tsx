@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app/app-sidebar";
 import { AppTopBar } from "@/components/app/app-topbar";
+import { SearchCommand } from "@/components/app/search-command";
 import { getSession } from "@/lib/auth";
 
 /**
@@ -25,6 +26,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         <AppTopBar user={user} />
         {children}
       </div>
+      <SearchCommand />
     </div>
   );
 }

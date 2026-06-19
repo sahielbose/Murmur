@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getDbUser } from "@/lib/current-user";
-import { keywordSearch } from "@/lib/search";
+import { hybridSearch } from "@/lib/search";
 
 /** Search across the user's recordings (MURMUR_CONTEXT.md §9). */
 export async function POST(req: NextRequest) {
@@ -13,6 +13,6 @@ export async function POST(req: NextRequest) {
   if (!q) {
     return NextResponse.json({ results: [] });
   }
-  const results = await keywordSearch(user.id, q);
+  const results = await hybridSearch(user.id, q);
   return NextResponse.json({ results });
 }

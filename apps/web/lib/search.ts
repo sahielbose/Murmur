@@ -123,6 +123,28 @@ export async function keywordSearch(
   return results;
 }
 
+/** Hybrid search: keyword + semantic, deduped and ranked by score. */
+export async function hybridSearch(
+  userId: string,
+  q: string,
+): Promise<SearchResult[]> {
+  const [keyword, semantic] = await Promise.all([
+    keywordSearch(userId, q),
+    semanticSearch(userId, q),
+  ]);
+
+  const byKey = new Map<string, SearchResult>();
+  for (const r of [...keyword, ...semantic]) {
+    const key = `${r.recordingId}:${r.startMs ?? "x"}:${r.snippet.slice(0, 48)}`;
+    const existing = byKey.get(key);
+    if (!existing || r.score > existing.score) byKey.set(key, r);
+  }
+
+  return Array.from(byKey.values())
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 20);
+}
+
 /** Semantic search via pgvector cosine similarity over the chunk embeddings. */
 export async function semanticSearch(
   userId: string,

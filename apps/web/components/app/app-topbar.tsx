@@ -68,6 +68,7 @@ export function AppTopBar({ user }: { user?: SidebarUser }) {
       <button
         type="button"
         aria-label="Search your conversations"
+        onClick={() => window.dispatchEvent(new Event("murmur:open-search"))}
         className="flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-border bg-bg px-3 text-sm text-fg-subtle transition-colors hover:bg-bg-subtle"
       >
         <Search className="h-4 w-4 shrink-0" />

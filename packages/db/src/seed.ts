@@ -13,9 +13,10 @@ import {
   mindMaps,
   recordingTags,
   highlights,
+  embeddings,
 } from "./schema";
 import type { MindMapGraph } from "./schema";
-import { SYSTEM_TEMPLATES } from "@murmur/ai";
+import { SYSTEM_TEMPLATES, mockEmbeddings } from "@murmur/ai";
 
 type SeedSpeaker = { localLabel: string; displayName: string };
 type SeedSegment = { speaker: number; startMs: number; text: string };
@@ -280,14 +281,29 @@ async function main() {
       )
       .returning();
 
-    await db.insert(transcriptSegments).values(
-      r.segments.map((s) => ({
+    const segmentRows = await db
+      .insert(transcriptSegments)
+      .values(
+        r.segments.map((s) => ({
+          recordingId: rec.id,
+          recordingSpeakerId: speakerRows[s.speaker]?.id ?? null,
+          startMs: s.startMs,
+          endMs: s.startMs + 4000,
+          text: s.text,
+          confidence: 0.95,
+        })),
+      )
+      .returning();
+
+    const vectors = await mockEmbeddings.embed(segmentRows.map((s) => s.text));
+    await db.insert(embeddings).values(
+      segmentRows.map((s, i) => ({
+        userId: user.id,
         recordingId: rec.id,
-        recordingSpeakerId: speakerRows[s.speaker]?.id ?? null,
-        startMs: s.startMs,
-        endMs: s.startMs + 4000,
-        text: s.text,
-        confidence: 0.95,
+        segmentId: s.id,
+        chunkText: s.text,
+        embedding: vectors[i]!,
+        kind: "segment" as const,
       })),
     );
 
