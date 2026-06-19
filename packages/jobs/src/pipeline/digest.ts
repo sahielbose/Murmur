@@ -43,6 +43,7 @@ export async function buildDigestForUser(
   userId: string,
   dateKey: string,
   count = 3,
+  salt = "",
 ): Promise<DigestItem[]> {
   const db = getDb();
   const rows = await db
@@ -62,7 +63,7 @@ export async function buildDigestForUser(
       ),
     );
 
-  const rng = mulberry32(hashStr(`${dateKey}:${userId}`));
+  const rng = mulberry32(hashStr(`${dateKey}:${userId}:${salt}`));
   const items: DigestItem[] = rows
     .map((r) => ({ r, k: rng() }))
     .sort((a, b) => a.k - b.k)

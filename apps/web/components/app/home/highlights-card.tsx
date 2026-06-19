@@ -1,35 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RefreshCw, Sparkles, X } from "lucide-react";
+import { toast } from "sonner";
 import type { DigestView } from "@/lib/resurfacing";
 import { Button } from "@/components/ui/button";
 import { DraftFollowupButton } from "@/components/app/draft-followup-button";
 
 export function HighlightsCard({ digest }: { digest: DigestView | null }) {
   const router = useRouter();
-  const [data, setData] = useState<DigestView | null>(digest);
+  // Derive from the prop so router.refresh()'s new server data flows through;
+  // `dismissed` is an optimistic flag that resets when a new digest arrives.
+  const [dismissed, setDismissed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const data = dismissed ? null : digest;
+
+  useEffect(() => {
+    setDismissed(false);
+  }, [digest?.id]);
 
   const refresh = async () => {
     setBusy(true);
     try {
-      await fetch("/api/highlights/refresh", { method: "POST" });
+      const res = await fetch("/api/highlights/refresh", { method: "POST" });
+      if (!res.ok) {
+        toast.error("Couldn't refresh highlights.");
+        return;
+      }
+      setDismissed(false);
       router.refresh();
+    } catch {
+      toast.error("Couldn't refresh highlights.");
     } finally {
       setBusy(false);
     }
   };
 
   const dismiss = async () => {
-    if (!data) return;
-    const id = data.id;
-    setData(null);
-    await fetch(`/api/highlights/${id}/dismiss`, { method: "POST" }).catch(
-      () => {},
-    );
+    const id = digest?.id;
+    if (!id) return;
+    setDismissed(true);
+    try {
+      await fetch(`/api/highlights/${id}/dismiss`, { method: "POST" });
+    } catch {
+      /* optimistic — server reconciles on next load */
+    }
     router.refresh();
   };
 

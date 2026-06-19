@@ -9,6 +9,13 @@ export async function POST() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const dateKey = new Date().toISOString().slice(0, 10);
-  const items = await buildDigestForUser(user.id, dateKey);
+  // Manual refresh reshuffles (a salt) so the user sees fresh suggestions; the
+  // daily cron stays deterministic (no salt).
+  const items = await buildDigestForUser(
+    user.id,
+    dateKey,
+    3,
+    String(Date.now()),
+  );
   return NextResponse.json({ items });
 }
