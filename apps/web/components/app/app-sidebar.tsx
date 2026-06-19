@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { devSignOut } from "@/lib/auth/actions";
 import { Wordmark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -157,11 +158,9 @@ export function AppSidebarContent({
                 Settings
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/login">
-                <LogOut className="h-4 w-4" />
-                Log out
-              </Link>
+            <DropdownMenuItem onSelect={() => void devSignOut()}>
+              <LogOut className="h-4 w-4" />
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
