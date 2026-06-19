@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/format";
@@ -10,6 +11,7 @@ export type ActionItemData = {
   status: "open" | "done";
   owner: string | null;
   dueAt: string | null;
+  recording?: { id: string; title: string };
 };
 
 /** A single checkable action item (MURMUR_UI.md §10.7). */
@@ -53,6 +55,14 @@ export function ActionItemRow({
             {item.owner && item.dueAt ? <span> · </span> : null}
             {item.dueAt ? <span>Due {formatDate(item.dueAt)}</span> : null}
           </p>
+        ) : null}
+        {item.recording ? (
+          <Link
+            href={`/app/recordings/${item.recording.id}`}
+            className="mt-0.5 inline-block text-xs text-fg-subtle underline-offset-2 hover:text-fg hover:underline"
+          >
+            {item.recording.title}
+          </Link>
         ) : null}
       </div>
     </li>
