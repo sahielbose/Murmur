@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatTimestamp } from "@/lib/format";
 import type { TranscriptRow } from "@/lib/recordings";
@@ -19,20 +20,84 @@ function toTurns(rows: TranscriptRow[]): Turn[] {
   return turns;
 }
 
+function EditableSpeaker({
+  name,
+  onRename,
+}: {
+  name: string;
+  onRename: (to: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(name);
+
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={() => {
+          setEditing(false);
+          if (draft.trim() && draft.trim() !== name) onRename(draft.trim());
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+          if (e.key === "Escape") {
+            setDraft(name);
+            setEditing(false);
+          }
+        }}
+        className="w-32 rounded border border-border bg-bg px-1 text-sm font-medium text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label="Speaker name"
+      />
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        setDraft(name);
+        setEditing(true);
+      }}
+      className="group/spk inline-flex items-center gap-1 text-sm font-medium text-fg"
+    >
+      {name}
+      <Pencil className="h-3 w-3 text-fg-subtle opacity-0 transition-opacity group-hover/spk:opacity-100" />
+    </button>
+  );
+}
+
 /**
- * Transcript tab (MURMUR_UI.md §10.5): speaker-labeled turns with timestamps
- * that click-to-seek the audio. The currently-playing turn is highlighted.
+ * Transcript tab (MURMUR_UI.md §10.5): speaker-labeled turns with click-to-seek
+ * timestamps. Renaming a speaker propagates across all of its turns.
  */
-export function TranscriptTab({ rows }: { rows: TranscriptRow[] }) {
+export function TranscriptTab({
+  recordingId,
+  rows: initialRows,
+}: {
+  recordingId: string;
+  rows: TranscriptRow[];
+}) {
   const audio = useRecordingAudio();
+  const [rows, setRows] = useState(initialRows);
   const activeRef = useRef<HTMLDivElement>(null);
 
-  // Deep-link: scroll the linked moment into view on mount.
   useEffect(() => {
     if (activeRef.current) {
       activeRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
     }
   }, []);
+
+  const renameSpeaker = (from: string, to: string) => {
+    setRows((prev) =>
+      prev.map((r) => (r.speaker === from ? { ...r, speaker: to } : r)),
+    );
+    void fetch(`/api/recordings/${recordingId}/speakers`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ from, to }),
+    }).catch(() => {});
+  };
 
   if (rows.length === 0) {
     return (
@@ -44,9 +109,6 @@ export function TranscriptTab({ rows }: { rows: TranscriptRow[] }) {
 
   const turns = toTurns(rows);
   const cur = audio?.currentMs ?? 0;
-
-  // The active turn is the one containing `cur`, else the nearest turn at or
-  // just before it (so a deep-linked timestamp highlights a single turn).
   let activeIndex = turns.findIndex(
     (t) =>
       cur >= t.segments[0]!.startMs &&
@@ -81,7 +143,10 @@ export function TranscriptTab({ rows }: { rows: TranscriptRow[] }) {
               {formatTimestamp(start)}
             </button>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-fg">{turn.speaker}</p>
+              <EditableSpeaker
+                name={turn.speaker}
+                onRename={(to) => renameSpeaker(turn.speaker, to)}
+              />
               <p className="mt-0.5 leading-relaxed text-fg">
                 {turn.segments.map((s) => s.text).join(" ")}
               </p>

@@ -113,7 +113,7 @@ export default async function RecordingDetailPage({
                   }))}
                 />
               }
-              transcript={<TranscriptTab rows={transcript} />}
+              transcript={<TranscriptTab recordingId={id} rows={transcript} />}
               actions={
                 <ActionItemsTab
                   items={items.map((it) => ({
