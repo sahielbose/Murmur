@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { Wordmark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,24 +23,48 @@ const NAV_LINKS = [
 ];
 
 /**
- * Sticky marketing nav with a state-aware CTA (MURMUR_UI.md §7). Logged out →
- * Log in + Start free; logged in → Open app. The scroll transparency
- * transition is layered on in Phase 17.
+ * Sticky marketing nav with a state-aware CTA (MURMUR_UI.md §7, §12).
+ * Transparent over the landing's dark hero, then solid + blur + hairline once
+ * scrolled; always solid on the lighter inner pages.
  */
 export function TopNav({ isAuthed = false }: { isAuthed?: boolean }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const isLanding = pathname === "/";
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const transparent = isLanding && !scrolled;
 
   return (
-    <header className="sticky top-0 z-40 h-nav border-b border-border bg-bg">
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-40 h-nav border-b transition-colors duration-300",
+        transparent
+          ? "border-transparent bg-transparent text-white"
+          : "bg-bg/85 border-border text-fg backdrop-blur-md",
+      )}
+    >
       <div className="mx-auto flex h-full max-w-container items-center justify-between px-6">
-        <Wordmark />
+        <Wordmark className={transparent ? "text-white" : undefined} />
 
         <nav className="hidden items-center gap-8 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-fg-muted transition-colors duration-1 hover:text-fg"
+              className={cn(
+                "text-sm transition-colors",
+                transparent
+                  ? "text-white/75 hover:text-white"
+                  : "text-fg-muted hover:text-fg",
+              )}
             >
               {link.label}
             </Link>
@@ -47,15 +73,37 @@ export function TopNav({ isAuthed = false }: { isAuthed?: boolean }) {
 
         <div className="hidden items-center gap-2 md:flex">
           {isAuthed ? (
-            <Button asChild>
+            <Button
+              asChild
+              className={
+                transparent
+                  ? "bg-white text-black hover:bg-white/90"
+                  : undefined
+              }
+            >
               <Link href="/app">Open app</Link>
             </Button>
           ) : (
             <>
-              <Button asChild variant="ghost">
+              <Button
+                asChild
+                variant="ghost"
+                className={
+                  transparent
+                    ? "text-white hover:bg-white/10 hover:text-white"
+                    : undefined
+                }
+              >
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button asChild>
+              <Button
+                asChild
+                className={
+                  transparent
+                    ? "bg-white text-black hover:bg-white/90"
+                    : undefined
+                }
+              >
                 <Link href="/signup">Start free</Link>
               </Button>
             </>
@@ -65,7 +113,16 @@ export function TopNav({ isAuthed = false }: { isAuthed?: boolean }) {
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Open menu">
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Open menu"
+                className={
+                  transparent
+                    ? "text-white hover:bg-white/10 hover:text-white"
+                    : undefined
+                }
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
