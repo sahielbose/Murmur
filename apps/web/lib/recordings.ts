@@ -7,8 +7,10 @@ import {
   getDb,
   recordings,
   recordingTags,
+  summaries,
   tags,
   type Recording,
+  type Summary,
   type Tag,
 } from "@murmur/db";
 
@@ -41,6 +43,23 @@ export async function getRecordingTags(recordingId: string): Promise<Tag[]> {
     .where(eq(recordingTags.recordingId, recordingId))
     .orderBy(asc(tags.name));
   return rows.map((r) => r.tag);
+}
+
+export async function getPrimarySummary(
+  recordingId: string,
+): Promise<Summary | undefined> {
+  const db = getDb();
+  const [s] = await db
+    .select()
+    .from(summaries)
+    .where(
+      and(
+        eq(summaries.recordingId, recordingId),
+        eq(summaries.isPrimary, true),
+      ),
+    )
+    .limit(1);
+  return s;
 }
 
 /** List a user's non-deleted recordings, newest first. */
