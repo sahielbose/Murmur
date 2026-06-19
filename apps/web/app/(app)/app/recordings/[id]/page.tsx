@@ -98,7 +98,13 @@ export default async function RecordingDetailPage({
                   }))}
                 />
               }
-              mindMap={<MindMapTab recordingId={id} graph={mindMap} />}
+              mindMap={
+                <MindMapTab
+                  recordingId={id}
+                  title={recording.title}
+                  graph={mindMap}
+                />
+              }
             />
           )}
         </div>
