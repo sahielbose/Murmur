@@ -1,29 +1,44 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Markdown } from "@/components/markdown";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export type SummaryData = {
   id: string;
   contentMd: string;
   style: string;
+  templateId: string | null;
 };
+
+export type TemplateOption = { id: string; name: string };
 
 export function SummaryTab({
   recordingId,
   summary,
+  templates,
 }: {
   recordingId: string;
   summary: SummaryData | null;
+  templates: TemplateOption[];
 }) {
   const [content, setContent] = useState(summary?.contentMd ?? "");
+  const [style, setStyle] = useState(summary?.style ?? "");
+  const [templateId, setTemplateId] = useState(summary?.templateId ?? "");
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(content);
   const [saving, setSaving] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
 
   if (!summary) {
     return (
@@ -52,12 +67,53 @@ export function SummaryTab({
     }
   };
 
+  const regenerate = async () => {
+    setRegenerating(true);
+    try {
+      const res = await fetch(`/api/recordings/${recordingId}/summary`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ templateId: templateId || undefined }),
+      });
+      if (!res.ok) throw new Error();
+      const data = (await res.json()) as { contentMd: string; style: string };
+      setContent(data.contentMd);
+      setStyle(data.style);
+      setEditing(false);
+      toast.success("Summary regenerated.");
+    } catch {
+      toast.error("Could not regenerate the summary.");
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
   return (
     <div className="py-4">
-      <div className="mb-1 flex items-center justify-between">
-        <span className="text-[13px] font-medium uppercase tracking-[0.12em] text-fg-subtle">
-          {summary.style}
-        </span>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Select value={templateId || undefined} onValueChange={setTemplateId}>
+            <SelectTrigger className="w-52">
+              <SelectValue placeholder={style || "Choose a style"} />
+            </SelectTrigger>
+            <SelectContent>
+              {templates.map((t) => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={regenerate}
+            disabled={regenerating}
+          >
+            <Wand2 className="h-4 w-4" />
+            {regenerating ? "Regenerating…" : "Regenerate"}
+          </Button>
+        </div>
         {!editing ? (
           <Button
             variant="ghost"

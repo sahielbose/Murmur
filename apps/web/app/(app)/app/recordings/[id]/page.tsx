@@ -6,6 +6,7 @@ import {
   getRecordingTags,
   getTranscript,
 } from "@/lib/recordings";
+import { listTemplatesForUser } from "@/lib/templates";
 import { SummaryTab } from "@/components/app/recording/summary-tab";
 import { TranscriptTab } from "@/components/app/recording/transcript-tab";
 import {
@@ -34,6 +35,7 @@ export default async function RecordingDetailPage({
   const tags = await getRecordingTags(id);
   const summary = await getPrimarySummary(id);
   const transcript = await getTranscript(id);
+  const templates = await listTemplatesForUser(user.id);
 
   return (
     <main className="flex-1 p-6 md:p-8">
@@ -70,9 +72,14 @@ export default async function RecordingDetailPage({
                           id: summary.id,
                           contentMd: summary.contentMd,
                           style: summary.style,
+                          templateId: summary.templateId,
                         }
                       : null
                   }
+                  templates={templates.map((t) => ({
+                    id: t.id,
+                    name: t.name,
+                  }))}
                 />
               }
               transcript={<TranscriptTab rows={transcript} />}
