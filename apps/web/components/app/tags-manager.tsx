@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -37,17 +38,29 @@ export function TagsManager({ tags }: { tags: TagItem[] }) {
   const rename = async (t: TagItem) => {
     const next = window.prompt("Rename tag", t.name);
     if (!next?.trim()) return;
-    await fetch(`/api/tags/${t.id}`, {
+    const res = await fetch(`/api/tags/${t.id}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ name: next.trim() }),
     });
+    if (res.status === 409) {
+      toast.error("A tag with that name already exists.");
+      return;
+    }
+    if (!res.ok) {
+      toast.error("Could not rename the tag.");
+      return;
+    }
     router.refresh();
   };
 
   const remove = async (t: TagItem) => {
     if (!window.confirm(`Delete the tag "${t.name}"?`)) return;
-    await fetch(`/api/tags/${t.id}`, { method: "DELETE" });
+    const res = await fetch(`/api/tags/${t.id}`, { method: "DELETE" });
+    if (!res.ok) {
+      toast.error("Could not delete the tag.");
+      return;
+    }
     router.refresh();
   };
 

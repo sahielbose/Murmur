@@ -30,7 +30,8 @@ export function TagEditor({
       body: JSON.stringify(input),
     });
     if (!res.ok) return;
-    const t = (await res.json()) as TagLike;
+    const t = (await res.json().catch(() => null)) as TagLike | null;
+    if (!t?.id) return;
     setCurrent((c) => (c.some((x) => x.id === t.id) ? c : [...c, t]));
     setAvailable((a) => (a.some((x) => x.id === t.id) ? a : [...a, t]));
   };

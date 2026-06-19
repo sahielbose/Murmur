@@ -165,8 +165,11 @@ export function AppSidebarContent({
           </DropdownMenuContent>
         </DropdownMenu>
         <div className="flex items-center gap-2">
-          <Badge variant={user.plan === "free" ? "outline" : "default"}>
-            {user.plan === "free" ? "Free" : "Pro"}
+          <Badge
+            variant={user.plan === "free" ? "outline" : "default"}
+            className="capitalize"
+          >
+            {user.plan}
           </Badge>
           <ThemeToggle />
         </div>

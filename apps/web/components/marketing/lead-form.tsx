@@ -28,12 +28,16 @@ export function LeadForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
-    const res = await fetch("/api/leads", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ name, email, company, teamSize, message }),
-    });
-    setStatus(res.ok ? "done" : "error");
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name, email, company, teamSize, message }),
+      });
+      setStatus(res.ok ? "done" : "error");
+    } catch {
+      setStatus("error");
+    }
   };
 
   if (status === "done") {

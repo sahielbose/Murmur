@@ -18,15 +18,24 @@ export async function PATCH(
   if (typeof body.name === "string") updates.name = body.name.trim();
   if (typeof body.color === "string") updates.color = body.color;
 
-  const [t] = await getDb()
-    .update(tags)
-    .set(updates)
-    .where(and(eq(tags.id, id), eq(tags.userId, user.id)))
-    .returning();
-  if (!t) {
+  let updated;
+  try {
+    [updated] = await getDb()
+      .update(tags)
+      .set(updates)
+      .where(and(eq(tags.id, id), eq(tags.userId, user.id)))
+      .returning();
+  } catch {
+    // unique(userId, name) violation when renaming onto an existing tag.
+    return NextResponse.json(
+      { error: "a tag with that name already exists" },
+      { status: 409 },
+    );
+  }
+  if (!updated) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
-  return NextResponse.json(t);
+  return NextResponse.json(updated);
 }
 
 export async function DELETE(

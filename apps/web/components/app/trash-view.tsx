@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RotateCcw, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatDuration } from "@/lib/format";
 
@@ -17,12 +18,18 @@ export function TrashView({ items }: { items: TrashItem[] }) {
   const router = useRouter();
   const [list, setList] = useState(items);
 
-  const restore = async (id: string) => {
-    setList((l) => l.filter((x) => x.id !== id));
-    await fetch(`/api/recordings/${id}/restore`, { method: "POST" }).catch(
-      () => {},
-    );
-    router.refresh();
+  const restore = async (item: TrashItem) => {
+    setList((l) => l.filter((x) => x.id !== item.id));
+    try {
+      const res = await fetch(`/api/recordings/${item.id}/restore`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error();
+      router.refresh();
+    } catch {
+      setList((l) => [...l, item]);
+      toast.error("Could not restore the recording.");
+    }
   };
 
   const purge = async (item: TrashItem) => {
@@ -33,10 +40,16 @@ export function TrashView({ items }: { items: TrashItem[] }) {
     )
       return;
     setList((l) => l.filter((x) => x.id !== item.id));
-    await fetch(`/api/recordings/${item.id}/purge`, { method: "DELETE" }).catch(
-      () => {},
-    );
-    router.refresh();
+    try {
+      const res = await fetch(`/api/recordings/${item.id}/purge`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error();
+      router.refresh();
+    } catch {
+      setList((l) => [...l, item]);
+      toast.error("Could not delete the recording.");
+    }
   };
 
   if (list.length === 0) {
@@ -59,7 +72,7 @@ export function TrashView({ items }: { items: TrashItem[] }) {
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => void restore(item.id)}
+              onClick={() => void restore(item)}
             >
               <RotateCcw className="h-4 w-4" />
               Restore

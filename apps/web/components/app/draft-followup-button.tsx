@@ -43,12 +43,18 @@ export function DraftFollowupButton({
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ commitment, recordingTitle, kind: k }),
       });
+      if (!res.ok) {
+        toast.error("Could not draft a follow-up.");
+        return;
+      }
       const data = (await res.json()) as {
-        subject: string | null;
-        body: string;
+        subject?: string | null;
+        body?: string;
       };
-      setSubject(data.subject);
-      setBody(data.body);
+      setSubject(data.subject ?? null);
+      setBody(data.body ?? "");
+    } catch {
+      toast.error("Could not draft a follow-up.");
     } finally {
       setLoading(false);
     }

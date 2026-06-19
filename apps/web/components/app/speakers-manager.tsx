@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, Users } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 export type SpeakerItem = { name: string; recordingCount: number };
 
 export function SpeakersManager({ speakers }: { speakers: SpeakerItem[] }) {
   const router = useRouter();
-  const [busy, setBusy] = useState(false);
+  const [busyName, setBusyName] = useState<string | null>(null);
 
   const rename = async (from: string) => {
     const to = window.prompt(
@@ -17,16 +18,20 @@ export function SpeakersManager({ speakers }: { speakers: SpeakerItem[] }) {
       from,
     );
     if (!to?.trim() || to.trim() === from) return;
-    setBusy(true);
+    setBusyName(from);
     try {
-      await fetch("/api/speakers/rename", {
+      const res = await fetch("/api/speakers/rename", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ from, to: to.trim() }),
       });
+      if (!res.ok) throw new Error();
+      toast.success(`Renamed to “${to.trim()}”.`);
       router.refresh();
+    } catch {
+      toast.error("Could not rename the speaker.");
     } finally {
-      setBusy(false);
+      setBusyName(null);
     }
   };
 
@@ -53,7 +58,7 @@ export function SpeakersManager({ speakers }: { speakers: SpeakerItem[] }) {
               variant="ghost"
               size="sm"
               className="ml-auto"
-              disabled={busy}
+              disabled={busyName === s.name}
               onClick={() => void rename(s.name)}
             >
               <Pencil className="h-4 w-4" />

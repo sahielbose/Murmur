@@ -50,9 +50,12 @@ export function CombineButton({
           recordingIds: [recordingId, ...selected],
         }),
       });
+      if (!res.ok) throw new Error();
       const data = (await res.json()) as { id?: string };
       if (data.id) router.push(`/app/combined/${data.id}`);
       else toast.error("Could not combine.");
+    } catch {
+      toast.error("Could not combine.");
     } finally {
       setBusy(false);
     }
