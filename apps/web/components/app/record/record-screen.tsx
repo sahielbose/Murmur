@@ -16,6 +16,7 @@ import { RecordOrb } from "./record-orb";
 import { LiveWaveform } from "./live-waveform";
 import { RecordTimer } from "./record-timer";
 import { ConsentBanner } from "./consent-banner";
+import { LiveTranscript } from "./live-transcript";
 
 /**
  * The live capture canvas (MURMUR_UI.md §10.2). Orb + waveform + timer +
@@ -101,6 +102,8 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
       />
 
       <LiveWaveform stream={rec.stream} active={rec.state === "recording"} />
+
+      <LiveTranscript state={rec.state} />
 
       {isRecording ? (
         <div className="flex items-center gap-3">
