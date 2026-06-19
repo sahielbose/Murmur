@@ -6,6 +6,7 @@ import { FeatureCarousel } from "@/components/marketing/feature-carousel";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { Testimonials } from "@/components/marketing/testimonials";
 import { PricingTable } from "@/components/marketing/pricing-table";
+import { Faq } from "@/components/marketing/faq";
 
 /**
  * Landing page (MURMUR_UI.md §7). Sections are composed top-to-bottom; all copy
@@ -38,6 +39,7 @@ export default async function LandingPage() {
           </div>
         </div>
       </section>
+      <Faq />
     </main>
   );
 }
