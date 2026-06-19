@@ -11,6 +11,8 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "db:up": "sh scripts/db-up.sh",
+    "db:down": "sh scripts/db-down.sh",
     "prepare": "husky"
   },
   "devDependencies": {

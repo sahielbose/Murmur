@@ -1,0 +1,24 @@
+# Local Postgres + pgvector for the secret-free build (MURMUR_CONTEXT.md §5).
+# Bring it up with `pnpm db:up`; credentials match .env.example's DATABASE_URL.
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: murmur-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: murmur
+      POSTGRES_PASSWORD: murmur
+      POSTGRES_DB: murmur
+    ports:
+      - "5432:5432"
+    volumes:
+      - murmur-db-data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U murmur -d murmur"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  murmur-db-data:
