@@ -1,4 +1,10 @@
-import { persistTranscript, setStatus, transcribeRecording } from "./steps";
+import {
+  generateActionItems,
+  generateSummary,
+  persistTranscript,
+  setStatus,
+  transcribeRecording,
+} from "./steps";
 
 /**
  * Plain sequential orchestrator mirroring the Inngest `processRecording`
@@ -11,7 +17,11 @@ export async function runPipeline(recordingId: string): Promise<void> {
   await persistTranscript(recordingId, transcript);
 
   await setStatus(recordingId, "summarizing");
-  // summarize / actions / mind map / embed → commits 4–5
+  await Promise.all([
+    generateSummary(recordingId, transcript),
+    generateActionItems(recordingId, transcript),
+  ]);
+  // mind map / embed → commit 5
 
   await setStatus(recordingId, "done");
 }

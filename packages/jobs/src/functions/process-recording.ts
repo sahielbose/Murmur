@@ -1,6 +1,8 @@
 import { inngest } from "../client";
 import type { RecordingCreatedData } from "../events";
 import {
+  generateActionItems,
+  generateSummary,
   persistTranscript,
   setStatus,
   transcribeRecording,
@@ -36,7 +38,15 @@ export const processRecording = inngest.createFunction(
       setStatus(recordingId, "summarizing"),
     );
 
-    // summarize / action items / mind map / embed → commits 4–5
+    // Summary + action items run in parallel after the transcript lands.
+    await Promise.all([
+      step.run("summarize", () => generateSummary(recordingId, transcript)),
+      step.run("extract-action-items", () =>
+        generateActionItems(recordingId, transcript),
+      ),
+    ]);
+
+    // mind map / embed → commit 5
 
     await step.run("mark-done", () => setStatus(recordingId, "done"));
 
