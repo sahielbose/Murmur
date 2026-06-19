@@ -16,6 +16,8 @@ import {
   type Tag,
 } from "@murmur/db";
 
+import type { TranscriptResult } from "@murmur/ai";
+
 export type TranscriptRow = {
   id: string;
   startMs: number;
@@ -91,6 +93,27 @@ export async function getTranscript(
     )
     .where(eq(transcriptSegments.recordingId, recordingId))
     .orderBy(asc(transcriptSegments.startMs));
+}
+
+/** Build a TranscriptResult from the persisted segments (for regeneration). */
+export async function buildTranscriptResult(
+  recordingId: string,
+  meta: { language: string | null; durationSec: number | null },
+): Promise<TranscriptResult> {
+  const rows = await getTranscript(recordingId);
+  const labels = Array.from(new Set(rows.map((r) => r.speaker ?? "Speaker")));
+  return {
+    language: meta.language ?? "en",
+    durationSec: meta.durationSec ?? 0,
+    speakers: labels.map((label) => ({ label })),
+    segments: rows.map((r) => ({
+      speakerLabel: r.speaker ?? "Speaker",
+      startMs: r.startMs,
+      endMs: r.endMs,
+      text: r.text,
+      confidence: 0.95,
+    })),
+  };
 }
 
 /** List a user's non-deleted recordings, newest first. */
