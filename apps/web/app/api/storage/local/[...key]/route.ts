@@ -36,7 +36,9 @@ export async function GET(
     return new NextResponse("Not found", { status: 404 });
   }
   const data = await storage.get(objectKey);
-  return new NextResponse(new Blob([data]), {
+  // Re-wrap into an ArrayBuffer-backed view so the body is a valid BodyInit.
+  const body = new Uint8Array(data);
+  return new NextResponse(new Blob([body]), {
     headers: {
       "content-type": "application/octet-stream",
       "cache-control": "private, max-age=3600",
