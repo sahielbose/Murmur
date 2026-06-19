@@ -1,12 +1,9 @@
-import { PageHeader } from "@/components/app/page-header";
+import { RecordScreen } from "@/components/app/record/record-screen";
 
 export default function RecordPage() {
   return (
-    <main className="flex-1 p-6 md:p-8">
-      <PageHeader
-        title="Record"
-        description="Start a live recording — Murmur captures, transcribes, and summarizes as you speak."
-      />
+    <main className="flex flex-1 flex-col">
+      <RecordScreen />
     </main>
   );
 }
