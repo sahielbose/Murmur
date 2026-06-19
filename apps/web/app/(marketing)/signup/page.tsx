@@ -35,7 +35,7 @@ export default function SignupPage() {
             Create account
           </Button>
         </form>
-        <p className="mt-4 text-center text-xs text-fg-subtle">
+        <p className="mt-4 text-center text-xs text-fg-muted">
           Dev mode — this creates a local session. Real auth arrives in Phase
           18.
         </p>

@@ -26,12 +26,15 @@ export function InPerson() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4" data-parallax="cluster">
+        <div
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+          data-parallax="cluster"
+        >
           {TILES.map(({ caption, Icon, wide }) => (
             <figure
               key={caption}
               className={`group relative flex aspect-[4/3] flex-col justify-end overflow-hidden rounded-2xl border border-border bg-bg p-4 ${
-                wide ? "col-span-2 aspect-[16/7]" : ""
+                wide ? "aspect-[16/7] sm:col-span-2" : ""
               }`}
             >
               <Icon

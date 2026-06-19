@@ -98,7 +98,7 @@ export function PricingTable() {
               <span
                 className={cn(
                   "text-sm",
-                  tier.featured ? "text-white/60" : "text-fg-subtle",
+                  tier.featured ? "text-white/60" : "text-fg-muted",
                 )}
               >
                 {tier.cadence}

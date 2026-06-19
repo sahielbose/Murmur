@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useReducedMotion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -11,6 +12,9 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 function ActionPreview() {
   return (
@@ -93,6 +97,7 @@ const FEATURES: {
 export function FeatureCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const reduce = useReducedMotion();
 
   const scrollTo = (index: number) => {
     const track = trackRef.current;
@@ -102,7 +107,7 @@ export function FeatureCarousel() {
     if (card) {
       track.scrollTo({
         left: card.offsetLeft - track.offsetLeft,
-        behavior: "smooth",
+        behavior: reduce ? "auto" : "smooth",
       });
     }
   };
@@ -171,7 +176,10 @@ export function FeatureCarousel() {
             scrollTo(active - 1);
           }
         }}
-        className="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className={cn(
+          "mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          FOCUS_RING,
+        )}
       >
         {FEATURES.map(({ title, body, Icon, preview }, i) => (
           <article
@@ -209,6 +217,7 @@ export function FeatureCarousel() {
             className={cn(
               "h-2 rounded-full transition-all",
               active === i ? "w-6 bg-fg" : "w-2 bg-border-strong",
+              FOCUS_RING,
             )}
           />
         ))}
@@ -234,7 +243,10 @@ function CarouselButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-fg transition-colors hover:bg-bg-subtle disabled:opacity-30"
+      className={cn(
+        "flex h-10 w-10 items-center justify-center rounded-full border border-border text-fg transition-colors hover:bg-bg-subtle disabled:opacity-30",
+        FOCUS_RING,
+      )}
     >
       {children}
     </button>

@@ -13,7 +13,7 @@ export function Hero({ isAuthed }: { isAuthed: boolean }) {
         <span className="mb-6 text-[13px] font-medium uppercase tracking-[0.12em] text-white/50">
           Introducing Murmur
         </span>
-        <h1 className="max-w-3xl font-serif text-5xl font-bold leading-[1.05] tracking-[-0.03em] sm:text-6xl md:text-7xl">
+        <h1 className="max-w-3xl font-serif text-[40px] font-bold leading-[1.05] tracking-[-0.03em] sm:text-6xl md:text-7xl">
           Remember every conversation.
         </h1>
         <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/70">

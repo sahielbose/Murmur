@@ -13,6 +13,11 @@ const CATEGORIES = [
     id: "using",
     label: "Using Murmur",
     qas: [
+      // Lead with the hardware question (MURMUR_UI.md §7 #9).
+      {
+        q: "Do I need any hardware?",
+        a: "No. Murmur runs entirely in your browser and uses your device's microphone. You can also upload audio files you already have.",
+      },
       {
         q: "How do I start a recording?",
         a: "Open Murmur, click Record, and allow microphone access. Click again to stop — your notes are ready moments later.",
@@ -24,16 +29,6 @@ const CATEGORIES = [
       {
         q: "What do I get after a recording?",
         a: "A full transcript, a summary in the style you choose, a list of action items, and a mind map — all searchable.",
-      },
-    ],
-  },
-  {
-    id: "compatibility",
-    label: "Compatibility",
-    qas: [
-      {
-        q: "Do I need any hardware?",
-        a: "No. Murmur runs entirely in your browser and uses your device's microphone. You can also upload audio files you already have.",
       },
     ],
   },

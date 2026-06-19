@@ -99,6 +99,23 @@
     border-color: var(--border);
   }
 
+  /* Anchor jumps clear the fixed nav (MURMUR_UI.md §14). */
+  html {
+    scroll-padding-top: calc(var(--nav-h) + 1rem);
+  }
+
+  /* Respect reduced-motion globally — disable big transforms/loops. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   body {
     background-color: var(--bg);
     color: var(--fg);

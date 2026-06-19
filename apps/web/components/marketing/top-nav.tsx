@@ -54,7 +54,7 @@ export function TopNav({ isAuthed = false }: { isAuthed?: boolean }) {
       <div className="mx-auto flex h-full max-w-container items-center justify-between px-6">
         <Wordmark className={transparent ? "text-white" : undefined} />
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -71,7 +71,7 @@ export function TopNav({ isAuthed = false }: { isAuthed?: boolean }) {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           {isAuthed ? (
             <Button
               asChild
@@ -110,7 +110,7 @@ export function TopNav({ isAuthed = false }: { isAuthed?: boolean }) {
           )}
         </div>
 
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button

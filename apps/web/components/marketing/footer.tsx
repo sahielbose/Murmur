@@ -43,7 +43,7 @@ export function Footer() {
         </div>
         {COLUMNS.map((col) => (
           <div key={col.title}>
-            <h3 className="text-[13px] font-medium uppercase tracking-[0.12em] text-fg-subtle">
+            <h3 className="text-[13px] font-medium uppercase tracking-[0.12em] text-fg-muted">
               {col.title}
             </h3>
             <ul className="mt-4 flex flex-col gap-3">
@@ -62,7 +62,7 @@ export function Footer() {
         ))}
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto flex max-w-container flex-col items-center justify-between gap-2 px-6 py-6 text-xs text-fg-subtle sm:flex-row">
+        <div className="mx-auto flex max-w-container flex-col items-center justify-between gap-2 px-6 py-6 text-xs text-fg-muted sm:flex-row">
           <span>© {year} Murmur</span>
           <span>Made for people who talk for a living.</span>
         </div>

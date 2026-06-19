@@ -41,7 +41,7 @@ export function Testimonials() {
               <blockquote className="font-serif text-xl leading-snug tracking-tight text-fg-strong">
                 “{quote}”
               </blockquote>
-              <figcaption className="mt-4 text-[13px] font-medium uppercase tracking-[0.12em] text-fg-subtle">
+              <figcaption className="mt-4 text-[13px] font-medium uppercase tracking-[0.12em] text-fg-muted">
                 {role}
               </figcaption>
             </figure>

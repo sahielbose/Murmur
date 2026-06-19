@@ -16,8 +16,16 @@ export default async function MarketingLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-bg text-fg">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-fg focus:px-4 focus:py-2 focus:text-bg"
+      >
+        Skip to content
+      </a>
       <TopNav isAuthed={Boolean(session)} />
-      <div className="flex flex-1 flex-col">{children}</div>
+      <div id="main" className="flex flex-1 flex-col">
+        {children}
+      </div>
       <Footer />
     </div>
   );
