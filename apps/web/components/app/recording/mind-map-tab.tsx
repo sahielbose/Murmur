@@ -77,9 +77,22 @@ export function MindMapTab({
 
   if (!current || current.nodes.length === 0) {
     return (
-      <p className="py-6 text-sm text-fg-muted">
-        The mind map appears once processing finishes.
-      </p>
+      <div className="py-4">
+        <div className="mb-3 flex justify-end">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={regenerate}
+            disabled={busy}
+          >
+            <Wand2 className="h-4 w-4" />
+            {busy ? "Generating…" : "Generate mind map"}
+          </Button>
+        </div>
+        <p className="py-6 text-sm text-fg-muted">
+          No mind map yet. Choose Generate to build one from the transcript.
+        </p>
+      </div>
     );
   }
 

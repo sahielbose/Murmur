@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Pencil } from "lucide-react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { formatDate, formatDuration } from "@/lib/format";
@@ -36,14 +37,19 @@ export function RecordingHeader({
     const next = draft.trim() || "Untitled recording";
     setEditing(false);
     if (next === title) return;
+    const prev = title;
     setTitle(next);
     setSaving(true);
     try {
-      await fetch(`/api/recordings/${recording.id}`, {
+      const res = await fetch(`/api/recordings/${recording.id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ title: next }),
       });
+      if (!res.ok) throw new Error();
+    } catch {
+      setTitle(prev);
+      toast.error("Could not rename the recording.");
     } finally {
       setSaving(false);
     }

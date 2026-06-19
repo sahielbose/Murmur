@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -68,8 +69,13 @@ export function FailedPanel({
   const retry = async () => {
     setRetrying(true);
     try {
-      await fetch(`/api/recordings/${recordingId}/retry`, { method: "POST" });
+      const res = await fetch(`/api/recordings/${recordingId}/retry`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error();
       router.refresh();
+    } catch {
+      toast.error("Could not retry processing.");
     } finally {
       setRetrying(false);
     }

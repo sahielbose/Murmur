@@ -47,6 +47,7 @@ export function RecordingAudioProvider({
     (fallbackDurationSec ?? 0) * 1000,
   );
   const [playing, setPlaying] = useState(false);
+  const [errored, setErrored] = useState(false);
 
   const seek = useCallback((ms: number) => {
     const el = ref.current;
@@ -80,7 +81,7 @@ export function RecordingAudioProvider({
         currentMs,
         durationMs,
         playing,
-        hasAudio: Boolean(src),
+        hasAudio: Boolean(src) && !errored,
         seek,
         toggle,
       }}
@@ -98,6 +99,7 @@ export function RecordingAudioProvider({
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
           onEnded={() => setPlaying(false)}
+          onError={() => setErrored(true)}
         />
       ) : null}
       {children}

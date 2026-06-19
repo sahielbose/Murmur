@@ -45,26 +45,22 @@ export function SummaryTab({
   const [content, setContent] = useState(summary?.contentMd ?? "");
   const [style, setStyle] = useState(summary?.style ?? "");
   const [templateId, setTemplateId] = useState(summary?.templateId ?? "");
+  const [summaryId, setSummaryId] = useState<string | null>(
+    summary?.id ?? null,
+  );
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(content);
   const [saving, setSaving] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
 
-  if (!summary) {
-    return (
-      <p className="py-6 text-sm text-fg-muted">
-        No summary yet — it appears once processing finishes.
-      </p>
-    );
-  }
-
   const save = async () => {
+    if (!summaryId) return;
     setSaving(true);
     try {
       const res = await fetch(`/api/recordings/${recordingId}/summary`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ summaryId: summary.id, contentMd: draft }),
+        body: JSON.stringify({ summaryId, contentMd: draft }),
       });
       if (!res.ok) throw new Error();
       setContent(draft);
@@ -86,7 +82,13 @@ export function SummaryTab({
         body: JSON.stringify({ templateId: templateId || undefined }),
       });
       if (!res.ok) throw new Error();
-      const data = (await res.json()) as { contentMd: string; style: string };
+      const data = (await res.json()) as {
+        id: string;
+        contentMd: string;
+        style: string;
+      };
+      // Track the new primary summary's id so a subsequent edit saves to it.
+      setSummaryId(data.id);
       setContent(data.contentMd);
       setStyle(data.style);
       setEditing(false);
@@ -124,7 +126,7 @@ export function SummaryTab({
             {regenerating ? "Regenerating…" : "Regenerate"}
           </Button>
         </div>
-        {!editing ? (
+        {!editing && content ? (
           <div className="flex items-center gap-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -218,8 +220,12 @@ export function SummaryTab({
             </Button>
           </div>
         </div>
-      ) : (
+      ) : content ? (
         <Markdown>{content}</Markdown>
+      ) : (
+        <p className="py-6 text-sm text-fg-muted">
+          No summary yet. Pick a style and choose Regenerate to create one.
+        </p>
       )}
     </div>
   );
