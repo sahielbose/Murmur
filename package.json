@@ -16,6 +16,7 @@
     "db:generate": "pnpm --filter @murmur/db db:generate",
     "db:migrate": "pnpm --filter @murmur/db db:migrate",
     "db:seed": "pnpm --filter @murmur/db db:seed",
+    "inngest:dev": "npx --yes inngest-cli@latest dev -u http://localhost:3000/api/inngest",
     "prepare": "husky"
   },
   "devDependencies": {

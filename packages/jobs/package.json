@@ -11,6 +11,11 @@
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@murmur/ai": "workspace:*",
+    "@murmur/db": "workspace:*",
+    "inngest": "^4.7.0"
+  },
   "devDependencies": {
     "typescript": "^5"
   }
