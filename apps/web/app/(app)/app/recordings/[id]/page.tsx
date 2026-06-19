@@ -7,8 +7,10 @@ import {
   getTranscript,
 } from "@/lib/recordings";
 import { listTemplatesForUser } from "@/lib/templates";
+import { getActionItemsForRecording } from "@/lib/action-items";
 import { SummaryTab } from "@/components/app/recording/summary-tab";
 import { TranscriptTab } from "@/components/app/recording/transcript-tab";
+import { ActionItemsTab } from "@/components/app/recording/action-items-tab";
 import {
   FailedPanel,
   ProcessingPanel,
@@ -36,6 +38,7 @@ export default async function RecordingDetailPage({
   const summary = await getPrimarySummary(id);
   const transcript = await getTranscript(id);
   const templates = await listTemplatesForUser(user.id);
+  const items = await getActionItemsForRecording(id);
 
   return (
     <main className="flex-1 p-6 md:p-8">
@@ -85,7 +88,15 @@ export default async function RecordingDetailPage({
               }
               transcript={<TranscriptTab rows={transcript} />}
               actions={
-                <TabPlaceholder>Action items appear here.</TabPlaceholder>
+                <ActionItemsTab
+                  items={items.map((it) => ({
+                    id: it.id,
+                    text: it.text,
+                    status: it.status,
+                    owner: it.owner,
+                    dueAt: it.dueAt?.toISOString() ?? null,
+                  }))}
+                />
               }
               mindMap={<TabPlaceholder>Mind map appears here.</TabPlaceholder>}
             />
