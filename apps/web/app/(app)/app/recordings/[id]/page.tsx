@@ -2,12 +2,14 @@ import { notFound } from "next/navigation";
 import { getDbUser } from "@/lib/current-user";
 import {
   getPrimarySummary,
+  getMindMap,
   getRecordingForUser,
   getRecordingTags,
   getTranscript,
 } from "@/lib/recordings";
 import { listTemplatesForUser } from "@/lib/templates";
 import { getActionItemsForRecording } from "@/lib/action-items";
+import { MindMapCanvas } from "@/components/app/recording/mind-map-canvas";
 import { SummaryTab } from "@/components/app/recording/summary-tab";
 import { TranscriptTab } from "@/components/app/recording/transcript-tab";
 import { ActionItemsTab } from "@/components/app/recording/action-items-tab";
@@ -39,6 +41,7 @@ export default async function RecordingDetailPage({
   const transcript = await getTranscript(id);
   const templates = await listTemplatesForUser(user.id);
   const items = await getActionItemsForRecording(id);
+  const mindMap = await getMindMap(id);
 
   return (
     <main className="flex-1 p-6 md:p-8">
@@ -98,7 +101,17 @@ export default async function RecordingDetailPage({
                   }))}
                 />
               }
-              mindMap={<TabPlaceholder>Mind map appears here.</TabPlaceholder>}
+              mindMap={
+                mindMap && mindMap.nodes.length > 0 ? (
+                  <div className="py-4">
+                    <MindMapCanvas graph={mindMap} />
+                  </div>
+                ) : (
+                  <TabPlaceholder>
+                    The mind map appears once processing finishes.
+                  </TabPlaceholder>
+                )
+              }
             />
           )}
         </div>
