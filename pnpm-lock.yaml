@@ -178,6 +178,9 @@ importers:
         specifier: ^3.4.9
         version: 3.4.9
     devDependencies:
+      '@murmur/ai':
+        specifier: workspace:*
+        version: link:../ai
       '@types/node':
         specifier: ^20.19.43
         version: 20.19.43

@@ -7,6 +7,7 @@ export * from "./stt/types";
 export * from "./llm/types";
 export * from "./embeddings/types";
 export * from "./storage/types";
+export * from "./templates";
 export * from "./registry";
 
 export { mockStt } from "./stt/mock";

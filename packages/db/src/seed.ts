@@ -4,6 +4,7 @@ import { getDb, closeDb } from "./client";
 import {
   users,
   tags,
+  templates,
   recordings,
   recordingSpeakers,
   transcriptSegments,
@@ -13,6 +14,7 @@ import {
   recordingTags,
 } from "./schema";
 import type { MindMapGraph } from "./schema";
+import { SYSTEM_TEMPLATES } from "@murmur/ai";
 
 type SeedSpeaker = { localLabel: string; displayName: string };
 type SeedSegment = { speaker: number; startMs: number; text: string };
@@ -230,6 +232,17 @@ async function main() {
     })
     .returning();
   if (!user) throw new Error("failed to seed user");
+
+  console.log("Seeding system templates…");
+  await db.insert(templates).values(
+    SYSTEM_TEMPLATES.map((t) => ({
+      userId: null,
+      name: t.name,
+      description: t.description,
+      promptBody: t.promptBody,
+      isSystem: true,
+    })),
+  );
 
   console.log("Seeding tags…");
   const tagRows = await db
