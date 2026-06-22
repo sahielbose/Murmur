@@ -8,12 +8,6 @@ import {
 } from "@/components/app/settings/settings-form";
 import { ApiKeySettings } from "@/components/app/settings/api-key-settings";
 
-const PLAN_COPY: Record<string, string> = {
-  free: "Free - 10 Ask questions a day and your last few recordings.",
-  pro: "Pro - unlimited Ask, full history, and priority processing.",
-  enterprise: "Enterprise - SSO, shared workspaces, and custom retention.",
-};
-
 function Section({
   title,
   description,
@@ -77,7 +71,7 @@ export default async function SettingsPage() {
     <main className="flex-1 p-6 md:p-8">
       <PageHeader
         title="Settings"
-        description="Your profile, plan, consent, and the engines behind Murmur."
+        description="Your profile, consent, and the engines behind Murmur."
       />
       <div className="mt-6 grid max-w-2xl gap-5">
         <Section
@@ -133,17 +127,6 @@ export default async function SettingsPage() {
 
         <Section title="Profile">
           <ProfileSettings initialName={user.name} email={user.email} />
-        </Section>
-
-        <Section title="Plan">
-          <div className="flex items-center gap-3">
-            <span className="rounded-full bg-fg px-3 py-1 text-xs font-medium capitalize text-bg">
-              {user.plan}
-            </span>
-            <p className="text-sm text-fg-muted">
-              {PLAN_COPY[user.plan] ?? ""}
-            </p>
-          </div>
         </Section>
 
         <Section

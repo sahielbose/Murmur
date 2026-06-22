@@ -19,15 +19,9 @@ export type RecordingOption = { id: string; title: string };
 export function AskChat({
   initialThreads,
   recordings,
-  plan,
-  usedToday,
-  dailyLimit,
 }: {
   initialThreads: ThreadSummary[];
   recordings: RecordingOption[];
-  plan: "free" | "pro" | "enterprise";
-  usedToday: number;
-  dailyLimit: number;
 }) {
   const [threads, setThreads] = useState(initialThreads);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -35,16 +29,12 @@ export function AskChat({
   const [input, setInput] = useState("");
   const [scopeId, setScopeId] = useState("all");
   const [sending, setSending] = useState(false);
-  const [used, setUsed] = useState(usedToday);
   // Guards selectThread against out-of-order responses on rapid switching.
   const latestThreadRef = useRef<string | null>(null);
 
-  const isFree = plan === "free";
-  const limitReached = isFree && used >= dailyLimit;
-
   const send = async () => {
     const q = input.trim();
-    if (!q || sending || limitReached) return;
+    if (!q || sending) return;
     setInput("");
     setMessages((m) => [...m, { role: "user", content: q, citations: [] }]);
     setSending(true);
@@ -59,21 +49,7 @@ export function AskChat({
           scopeRecordingId: scopeId === "all" ? null : scopeId,
         }),
       });
-      if (res.status === 429) {
-        setUsed(dailyLimit);
-        setMessages((m) => [
-          ...m,
-          {
-            role: "assistant",
-            content:
-              "You've reached today's free limit for Ask. Upgrade to Pro for unlimited questions.",
-            citations: [],
-          },
-        ]);
-        return;
-      }
       if (!res.ok) {
-        // Don't burn a free-tier question on a failed request.
         setMessages((m) => [
           ...m,
           {
@@ -84,7 +60,6 @@ export function AskChat({
         ]);
         return;
       }
-      setUsed((u) => u + 1);
       const data = (await res.json()) as {
         threadId?: string;
         threadTitle?: string;
@@ -232,30 +207,18 @@ export function AskChat({
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={
-                limitReached
-                  ? "You've hit today's free limit"
-                  : "Ask anything about your recordings"
-              }
+              placeholder="Ask anything about your recordings"
               aria-label="Ask a question"
-              disabled={limitReached}
               className="h-11 flex-1 rounded-md border border-border bg-bg px-3 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
             />
             <Button
               type="submit"
               size="icon"
-              disabled={sending || !input.trim() || limitReached}
+              disabled={sending || !input.trim()}
             >
               <ArrowUp className="h-4 w-4" />
             </Button>
           </form>
-          {isFree ? (
-            <p className="mx-auto mt-2 max-w-2xl text-center text-xs text-fg-subtle">
-              {limitReached
-                ? "Free plan daily limit reached. Upgrade to Pro for unlimited Ask."
-                : `Free plan · ${Math.max(0, dailyLimit - used)} of ${dailyLimit} questions left today`}
-            </p>
-          ) : null}
         </div>
       </div>
     </div>

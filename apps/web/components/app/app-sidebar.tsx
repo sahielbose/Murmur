@@ -22,7 +22,6 @@ import { cn } from "@/lib/utils";
 import { devSignOut } from "@/lib/auth/actions";
 import { Wordmark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   DropdownMenu,
@@ -148,8 +147,8 @@ export function AppSidebarContent({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuLabel>
-              <span className="capitalize">{user.plan}</span> plan
+            <DropdownMenuLabel className="truncate">
+              {user.email}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
@@ -164,15 +163,7 @@ export function AppSidebarContent({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <div className="flex items-center gap-2">
-          <Badge
-            variant={user.plan === "free" ? "outline" : "default"}
-            className="capitalize"
-          >
-            {user.plan}
-          </Badge>
-          <ThemeToggle />
-        </div>
+        <ThemeToggle />
       </div>
     </div>
   );

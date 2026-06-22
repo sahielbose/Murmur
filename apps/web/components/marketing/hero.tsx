@@ -28,7 +28,7 @@ export function Hero({ isAuthed }: { isAuthed: boolean }) {
             className="bg-white text-black hover:bg-white/90"
           >
             <Link href={isAuthed ? "/app" : "/signup"}>
-              {isAuthed ? "Open app" : "Start free"}
+              {isAuthed ? "Open app" : "Get started"}
             </Link>
           </Button>
           <Button

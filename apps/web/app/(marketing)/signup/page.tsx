@@ -10,7 +10,7 @@ export default function SignupPage() {
         <div className="mb-8 flex flex-col items-center text-center">
           <Wordmark href="/" />
           <h1 className="mt-6 font-serif text-3xl font-bold tracking-[-0.02em] text-fg-strong">
-            Start free
+            Get started
           </h1>
           <p className="mt-2 text-sm text-fg-muted">
             Create your Murmur account.

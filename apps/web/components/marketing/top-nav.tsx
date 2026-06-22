@@ -103,7 +103,7 @@ export function TopNav({ isAuthed = false }: { isAuthed?: boolean }) {
                     : undefined
                 }
               >
-                <Link href="/signup">Start free</Link>
+                <Link href="/signup">Get started</Link>
               </Button>
             </>
           )}
@@ -157,7 +157,7 @@ export function TopNav({ isAuthed = false }: { isAuthed?: boolean }) {
                     </Button>
                     <Button asChild>
                       <Link href="/signup" onClick={() => setOpen(false)}>
-                        Start free
+                        Get started
                       </Link>
                     </Button>
                   </>
