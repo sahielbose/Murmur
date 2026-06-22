@@ -11,6 +11,9 @@ type FinalizeBody = {
   title?: string;
   source?: string;
   durationSec?: number;
+  transcript?: {
+    segments?: { text?: string; startMs?: number; endMs?: number }[];
+  };
 };
 
 /**
@@ -49,6 +52,16 @@ export async function POST(req: NextRequest) {
   const source =
     body.source === "mic" || body.source === "system" ? body.source : "upload";
 
+  // A live recording may carry a browser-captured transcript (real words).
+  const segments = (body.transcript?.segments ?? [])
+    .filter((s) => s.text?.trim())
+    .map((s) => ({
+      text: s.text!.trim(),
+      startMs: Math.max(0, Math.round(s.startMs ?? 0)),
+      endMs: Math.max(0, Math.round(s.endMs ?? s.startMs ?? 0)),
+    }));
+  const providedTranscript = segments.length > 0 ? { segments } : null;
+
   const [rec] = await getDb()
     .insert(recordings)
     .values({
@@ -57,6 +70,7 @@ export async function POST(req: NextRequest) {
       status: "uploaded",
       source,
       audioKey: body.key,
+      providedTranscript,
       durationSec:
         typeof body.durationSec === "number"
           ? Math.round(body.durationSec)

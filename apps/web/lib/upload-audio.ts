@@ -10,6 +10,10 @@ export async function uploadAudio(
     source: "mic" | "upload" | "system";
     contentType?: string;
     durationSec?: number;
+    /** Browser-captured live transcript segments, if any. */
+    transcript?: {
+      segments: { text: string; startMs: number; endMs: number }[];
+    };
   },
 ): Promise<{ id?: string }> {
   const contentType = opts.contentType ?? file.type ?? "audio/webm";
@@ -44,6 +48,7 @@ export async function uploadAudio(
       title: opts.title,
       source: opts.source,
       durationSec: opts.durationSec,
+      transcript: opts.transcript,
     }),
   });
   if (!finalizeRes.ok) throw new Error("Could not finalize the upload.");

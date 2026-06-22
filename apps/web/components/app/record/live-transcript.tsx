@@ -3,8 +3,40 @@
 import { useEffect, useRef, useState } from "react";
 import type { RecorderState } from "./use-audio-recorder";
 
-// Original canned phrases for the mock live view. The authoritative transcript
-// is produced by the batch pass after the recording stops.
+/** Presentational live transcript: finalized lines + a muted interim line. */
+export function LiveTranscript({
+  lines,
+  interim,
+}: {
+  lines: string[];
+  interim: string;
+}) {
+  const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ block: "end" });
+  }, [lines.length, interim]);
+
+  if (lines.length === 0 && !interim) return null;
+
+  return (
+    <div className="max-h-48 w-full max-w-md space-y-1.5 overflow-y-auto rounded-lg border border-border bg-bg-elevated p-4 text-left">
+      {lines.map((line, i) => (
+        <p key={i} className="text-sm leading-relaxed text-fg">
+          {line}
+        </p>
+      ))}
+      {interim ? (
+        <p className="text-sm leading-relaxed text-fg-subtle">{interim}</p>
+      ) : null}
+      <div ref={endRef} />
+    </div>
+  );
+}
+
+// Original canned phrases, shown only when the browser has no speech
+// recognition (e.g. Firefox). The authoritative transcript still comes from the
+// batch pass after the recording stops.
 const PHRASES = [
   "Thanks for hopping on - let's start with where things stand.",
   "We're mostly on track. The one risk is the timeline for next week.",
@@ -13,12 +45,8 @@ const PHRASES = [
   "Sounds good. I'll get you the notes this afternoon.",
 ];
 
-/**
- * Live transcript view (MURMUR_UI.md §10.2). Streams mock partials while
- * recording - interim text is muted, finalized lines use `--fg`. Resets on a
- * fresh recording, freezes on pause.
- */
-export function LiveTranscript({ state }: { state: RecorderState }) {
+/** Fallback simulated transcript for browsers without Web Speech. */
+export function MockLiveTranscript({ state }: { state: RecorderState }) {
   const [lines, setLines] = useState<string[]>([]);
   const [interim, setInterim] = useState("");
   const phraseIdx = useRef(0);
@@ -51,18 +79,5 @@ export function LiveTranscript({ state }: { state: RecorderState }) {
     return () => clearInterval(id);
   }, [state]);
 
-  if (lines.length === 0 && !interim) return null;
-
-  return (
-    <div className="max-h-48 w-full max-w-md space-y-1.5 overflow-y-auto rounded-lg border border-border bg-bg-elevated p-4 text-left">
-      {lines.map((line, i) => (
-        <p key={i} className="text-sm leading-relaxed text-fg">
-          {line}
-        </p>
-      ))}
-      {interim ? (
-        <p className="text-sm leading-relaxed text-fg-subtle">{interim}</p>
-      ) : null}
-    </div>
-  );
+  return <LiveTranscript lines={lines} interim={interim} />;
 }

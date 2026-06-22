@@ -20,7 +20,8 @@ import { RecordOrb } from "./record-orb";
 import { LiveWaveform } from "./live-waveform";
 import { RecordTimer } from "./record-timer";
 import { ConsentBanner } from "./consent-banner";
-import { LiveTranscript } from "./live-transcript";
+import { LiveTranscript, MockLiveTranscript } from "./live-transcript";
+import { useSpeechRecognition } from "./use-speech-recognition";
 
 const ERROR_COPY: Record<RecorderError, string> = {
   "permission-denied":
@@ -47,6 +48,7 @@ function defaultTitle(): string {
 export function RecordScreen({ consented = false }: { consented?: boolean }) {
   const router = useRouter();
   const rec = useAudioRecorder();
+  const speech = useSpeechRecognition(rec.state);
   const [acknowledged, setAcknowledged] = useState(consented);
   const [consentOpen, setConsentOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -54,6 +56,7 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
   const isRecording = rec.state === "recording" || rec.state === "paused";
 
   const save = async () => {
+    const segments = speech.getSegments();
     const blob = await rec.stop();
     if (!blob) return;
     setSaving(true);
@@ -63,6 +66,7 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
         title: defaultTitle(),
         source: "mic",
         contentType: blob.type,
+        transcript: segments.length > 0 ? { segments } : undefined,
       });
       toast.success("Saved - Murmur is processing your recording.");
       if (result.id) router.push(`/app/recordings/${result.id}`);
@@ -148,7 +152,11 @@ export function RecordScreen({ consented = false }: { consented?: boolean }) {
 
       <LiveWaveform stream={rec.stream} active={rec.state === "recording"} />
 
-      <LiveTranscript state={rec.state} />
+      {speech.supported ? (
+        <LiveTranscript lines={speech.lines} interim={speech.interim} />
+      ) : (
+        <MockLiveTranscript state={rec.state} />
+      )}
 
       {isRecording ? (
         <div className="flex items-center gap-3">

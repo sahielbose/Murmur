@@ -56,6 +56,29 @@ export async function transcribeRecording(
 ): Promise<TranscriptResult> {
   const rec = await getRecording(id);
   if (!rec) throw new Error(`recording ${id} not found`);
+
+  // Prefer a browser-captured transcript (live speech recognition) when present
+  // — those are the user's real words, so we skip STT entirely.
+  const provided = rec.providedTranscript;
+  if (provided && provided.segments.length > 0) {
+    return {
+      language: rec.language ?? "en",
+      durationSec:
+        rec.durationSec ??
+        Math.ceil(
+          (provided.segments[provided.segments.length - 1]?.endMs ?? 0) / 1000,
+        ),
+      speakers: [{ label: "You" }],
+      segments: provided.segments.map((s) => ({
+        speakerLabel: "You",
+        startMs: s.startMs,
+        endMs: s.endMs,
+        text: s.text,
+        confidence: 0.95,
+      })),
+    };
+  }
+
   const stt = getStt();
   return stt.transcribe({
     audioKey: rec.audioKey ?? id,

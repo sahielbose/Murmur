@@ -1,6 +1,7 @@
 import {
   index,
   integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
@@ -9,6 +10,14 @@ import {
 import { recordingSourceEnum, recordingStatusEnum } from "./enums";
 import { users } from "./users";
 import { timestamps } from "./_helpers";
+
+/**
+ * A transcript captured client-side (browser speech recognition during a live
+ * recording). When present, the pipeline uses it instead of running STT.
+ */
+export type ProvidedTranscript = {
+  segments: { text: string; startMs: number; endMs: number }[];
+};
 
 export const recordings = pgTable(
   "recordings",
@@ -24,6 +33,10 @@ export const recordings = pgTable(
     durationSec: integer("duration_sec"),
     // Object-storage key for the audio (R2 / local filesystem).
     audioKey: text("audio_key"),
+    // Browser-captured transcript (live speech recognition), if any.
+    providedTranscript: jsonb(
+      "provided_transcript",
+    ).$type<ProvidedTranscript>(),
     error: text("error"),
     recordedAt: timestamp("recorded_at", { withTimezone: true }),
     // Soft delete → recycle bin.
