@@ -9,8 +9,16 @@ export * from "./embeddings/types";
 export * from "./storage/types";
 export * from "./templates";
 export * from "./registry";
+export {
+  getAnthropicApiKey,
+  getConfiguredModel,
+  readRuntimeConfig,
+  writeRuntimeConfig,
+  type RuntimeConfig,
+} from "./config/runtime";
 
 export { mockStt } from "./stt/mock";
 export { mockLlm } from "./llm/mock";
+export { createAnthropicLlm, testAnthropicKey } from "./llm/anthropic";
 export { mockEmbeddings } from "./embeddings/mock";
 export { localFileStorage } from "./storage/local";

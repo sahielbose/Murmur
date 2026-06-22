@@ -6,6 +6,7 @@ import {
   ConsentSettings,
   ProfileSettings,
 } from "@/components/app/settings/settings-form";
+import { AnthropicKeySettings } from "@/components/app/settings/anthropic-key-settings";
 
 const PLAN_COPY: Record<string, string> = {
   free: "Free - 10 Ask questions a day and your last few recordings.",
@@ -77,6 +78,13 @@ export default async function SettingsPage() {
         description="Your profile, plan, consent, and the engines behind Murmur."
       />
       <div className="mt-6 grid max-w-2xl gap-5">
+        <Section
+          title="Murmur AI"
+          description="Bring your own Anthropic key. Murmur runs every AI feature on Claude - add a key and everything just works."
+        >
+          <AnthropicKeySettings />
+        </Section>
+
         <Section title="Profile">
           <ProfileSettings initialName={user.name} email={user.email} />
         </Section>
