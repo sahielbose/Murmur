@@ -84,7 +84,8 @@ export function AppSidebarContent({
   return (
     <div className="flex h-full flex-col gap-4 p-3">
       <div className="px-2 pt-2">
-        <Wordmark href="/app" />
+        {/* Logo → public home page; the "Home" item below goes to the app. */}
+        <Wordmark href="/" />
       </div>
 
       <div className="flex flex-col gap-2 px-1">
@@ -151,6 +152,12 @@ export function AppSidebarContent({
               {user.email}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/">
+                <Home className="h-4 w-4" />
+                Home page
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/app/settings">
                 <Settings className="h-4 w-4" />
