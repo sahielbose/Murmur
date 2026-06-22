@@ -7,8 +7,13 @@ import { dirname, join, resolve } from "node:path";
  * and read fresh per call so a freshly-saved key takes effect immediately.
  */
 export type RuntimeConfig = {
+  /** Anthropic (Claude) — summaries, action items, mind maps, Ask, drafts. */
   anthropicApiKey?: string;
-  /** Optional model override; defaults to claude-opus-4-8. */
+  /** ElevenLabs (Scribe) — speech-to-text + speaker diarization. */
+  elevenLabsApiKey?: string;
+  /** OpenAI — embeddings for semantic search + Ask retrieval. */
+  openAiApiKey?: string;
+  /** Optional Claude model override; defaults to claude-opus-4-8. */
   model?: string;
 };
 
@@ -53,11 +58,25 @@ export function writeRuntimeConfig(
   return next;
 }
 
+/** Resolve a provider key: env var wins, else the value saved in Settings. */
+function resolveKey(envVar: string, field: keyof RuntimeConfig): string | null {
+  const fromEnv = process.env[envVar]?.trim();
+  if (fromEnv) return fromEnv;
+  const saved = readRuntimeConfig()[field];
+  return typeof saved === "string" && saved.trim() ? saved.trim() : null;
+}
+
 /** The active Anthropic key: env var wins, else the value saved in Settings. */
 export function getAnthropicApiKey(): string | null {
-  const fromEnv = process.env.ANTHROPIC_API_KEY?.trim();
-  if (fromEnv) return fromEnv;
-  return readRuntimeConfig().anthropicApiKey?.trim() || null;
+  return resolveKey("ANTHROPIC_API_KEY", "anthropicApiKey");
+}
+
+export function getElevenLabsApiKey(): string | null {
+  return resolveKey("ELEVENLABS_API_KEY", "elevenLabsApiKey");
+}
+
+export function getOpenAiApiKey(): string | null {
+  return resolveKey("OPENAI_API_KEY", "openAiApiKey");
 }
 
 export function getConfiguredModel(): string {

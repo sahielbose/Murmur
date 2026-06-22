@@ -15,6 +15,7 @@ import {
   getStt,
   getLlm,
   getEmbeddings,
+  isElevenLabsConfigured,
   type TranscriptResult,
 } from "@murmur/ai";
 
@@ -56,9 +57,19 @@ export async function transcribeRecording(
 ): Promise<TranscriptResult> {
   const rec = await getRecording(id);
   if (!rec) throw new Error(`recording ${id} not found`);
+  const stt = getStt();
 
-  // Prefer a browser-captured transcript (live speech recognition) when present
-  // — those are the user's real words, so we skip STT entirely.
+  // Real STT on the actual audio wins — better accuracy and real speaker
+  // diarization than the browser's live recognition.
+  if (isElevenLabsConfigured() && rec.audioKey) {
+    return stt.transcribe({
+      audioKey: rec.audioKey,
+      seed: id,
+      language: rec.language ?? undefined,
+    });
+  }
+
+  // Otherwise use the browser-captured transcript (live speech recognition).
   const provided = rec.providedTranscript;
   if (provided && provided.segments.length > 0) {
     return {
@@ -79,7 +90,7 @@ export async function transcribeRecording(
     };
   }
 
-  const stt = getStt();
+  // Fall back to the (mock) STT provider.
   return stt.transcribe({
     audioKey: rec.audioKey ?? id,
     seed: id,

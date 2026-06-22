@@ -12,25 +12,39 @@ type Status = {
   editable: boolean;
 };
 
-export function AnthropicKeySettings() {
+export function ApiKeySettings({
+  provider,
+  placeholder,
+  help,
+  connectedLabel,
+  successMessage,
+}: {
+  provider: "anthropic" | "elevenlabs" | "openai";
+  placeholder: string;
+  help: string;
+  connectedLabel: string;
+  successMessage: string;
+}) {
+  const endpoint = `/api/settings/keys/${provider}`;
   const [status, setStatus] = useState<Status | null>(null);
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
-    const res = await fetch("/api/settings/anthropic-key");
+    const res = await fetch(endpoint);
     if (res.ok) setStatus((await res.json()) as Status);
   };
 
   useEffect(() => {
     void load();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provider]);
 
   const save = async () => {
     if (!key.trim() || busy) return;
     setBusy(true);
     try {
-      const res = await fetch("/api/settings/anthropic-key", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ apiKey: key.trim() }),
@@ -42,9 +56,9 @@ export function AnthropicKeySettings() {
       }
       setKey("");
       setStatus(data);
-      toast.success("Connected - Murmur now runs on Claude.");
+      toast.success(successMessage);
     } catch {
-      toast.error("Could not reach Anthropic. Check your connection.");
+      toast.error("Could not validate the key. Check your connection.");
     } finally {
       setBusy(false);
     }
@@ -53,9 +67,7 @@ export function AnthropicKeySettings() {
   const remove = async () => {
     setBusy(true);
     try {
-      const res = await fetch("/api/settings/anthropic-key", {
-        method: "DELETE",
-      });
+      const res = await fetch(endpoint, { method: "DELETE" });
       if (res.ok) {
         setStatus((await res.json()) as Status);
         toast.success("Key removed.");
@@ -74,7 +86,7 @@ export function AnthropicKeySettings() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm">
           <span aria-hidden className="h-2 w-2 rounded-full bg-fg" />
-          <span className="font-medium text-fg">Connected to Claude</span>
+          <span className="font-medium text-fg">{connectedLabel}</span>
           {status.hint ? (
             <span className="font-mono text-xs text-fg-muted">
               {status.hint}
@@ -111,20 +123,15 @@ export function AnthropicKeySettings() {
           onKeyDown={(e) => {
             if (e.key === "Enter") void save();
           }}
-          placeholder="sk-ant-…"
-          aria-label="Anthropic API key"
+          placeholder={placeholder}
+          aria-label={`${provider} API key`}
           autoComplete="off"
         />
         <Button onClick={() => void save()} disabled={busy || !key.trim()}>
           {busy ? "Connecting…" : "Connect"}
         </Button>
       </div>
-      <p className="text-xs text-fg-muted">
-        Paste your Anthropic API key to power summaries, action items, mind
-        maps, and Ask with real Claude. Get one at console.anthropic.com. Your
-        key is stored only on this server and never leaves it. Until you add
-        one, Murmur uses built-in sample generation.
-      </p>
+      <p className="text-xs text-fg-muted">{help}</p>
     </div>
   );
 }

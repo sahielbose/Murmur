@@ -6,7 +6,7 @@ import {
   ConsentSettings,
   ProfileSettings,
 } from "@/components/app/settings/settings-form";
-import { AnthropicKeySettings } from "@/components/app/settings/anthropic-key-settings";
+import { ApiKeySettings } from "@/components/app/settings/api-key-settings";
 
 const PLAN_COPY: Record<string, string> = {
   free: "Free - 10 Ask questions a day and your last few recordings.",
@@ -80,9 +80,53 @@ export default async function SettingsPage() {
       <div className="mt-6 grid max-w-2xl gap-5">
         <Section
           title="Murmur AI"
-          description="Bring your own Anthropic key. Murmur runs every AI feature on Claude - add a key and everything just works."
+          description="Bring your own keys. Add them and every AI feature runs on the real providers - no keys, and Murmur uses built-in samples so it still works."
         >
-          <AnthropicKeySettings />
+          <div className="space-y-5">
+            <div>
+              <p className="text-sm font-medium text-fg">
+                Language model - Anthropic Claude
+              </p>
+              <p className="mb-2 text-xs text-fg-muted">
+                Summaries, action items, mind maps, Ask, and drafts.
+              </p>
+              <ApiKeySettings
+                provider="anthropic"
+                placeholder="sk-ant-…"
+                connectedLabel="Connected to Claude"
+                successMessage="Connected - summaries and Ask now run on Claude."
+                help="Get a key at console.anthropic.com. Stored only on this server."
+              />
+            </div>
+            <div className="border-t border-border pt-5">
+              <p className="text-sm font-medium text-fg">
+                Speech-to-text - ElevenLabs
+              </p>
+              <p className="mb-2 text-xs text-fg-muted">
+                Transcribes your recordings with automatic speaker detection.
+              </p>
+              <ApiKeySettings
+                provider="elevenlabs"
+                placeholder="ElevenLabs API key"
+                connectedLabel="Connected to ElevenLabs"
+                successMessage="Connected - recordings now transcribe with ElevenLabs."
+                help="Get a key at elevenlabs.io. Stored only on this server."
+              />
+            </div>
+            <div className="border-t border-border pt-5">
+              <p className="text-sm font-medium text-fg">Embeddings - OpenAI</p>
+              <p className="mb-2 text-xs text-fg-muted">
+                Powers semantic search and Ask retrieval over your recordings.
+              </p>
+              <ApiKeySettings
+                provider="openai"
+                placeholder="sk-…"
+                connectedLabel="Connected to OpenAI"
+                successMessage="Connected - search now uses OpenAI embeddings."
+                help="Get a key at platform.openai.com. Stored only on this server."
+              />
+            </div>
+          </div>
         </Section>
 
         <Section title="Profile">

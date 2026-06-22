@@ -11,6 +11,8 @@ export * from "./templates";
 export * from "./registry";
 export {
   getAnthropicApiKey,
+  getElevenLabsApiKey,
+  getOpenAiApiKey,
   getConfiguredModel,
   readRuntimeConfig,
   writeRuntimeConfig,
@@ -18,7 +20,9 @@ export {
 } from "./config/runtime";
 
 export { mockStt } from "./stt/mock";
+export { createElevenLabsStt, testElevenLabsKey } from "./stt/elevenlabs";
 export { mockLlm } from "./llm/mock";
 export { createAnthropicLlm, testAnthropicKey } from "./llm/anthropic";
 export { mockEmbeddings } from "./embeddings/mock";
+export { createOpenAiEmbeddings, testOpenAiKey } from "./embeddings/openai";
 export { localFileStorage } from "./storage/local";

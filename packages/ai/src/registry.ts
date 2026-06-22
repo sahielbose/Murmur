@@ -1,9 +1,16 @@
 import { mockStt } from "./stt/mock";
+import { createElevenLabsStt } from "./stt/elevenlabs";
 import { mockLlm } from "./llm/mock";
 import { createAnthropicLlm } from "./llm/anthropic";
 import { mockEmbeddings } from "./embeddings/mock";
+import { createOpenAiEmbeddings } from "./embeddings/openai";
 import { localFileStorage } from "./storage/local";
-import { getAnthropicApiKey, getConfiguredModel } from "./config/runtime";
+import {
+  getAnthropicApiKey,
+  getConfiguredModel,
+  getElevenLabsApiKey,
+  getOpenAiApiKey,
+} from "./config/runtime";
 import type { SttProvider } from "./stt/types";
 import type { LlmProvider } from "./llm/types";
 import type { EmbeddingsProvider } from "./embeddings/types";
@@ -21,9 +28,15 @@ function warnFallback(kind: string, requested: string) {
  * requested but unavailable - so the app always boots.
  */
 export function getStt(): SttProvider {
-  const provider = process.env.STT_PROVIDER ?? "mock";
-  if (provider !== "mock") warnFallback("STT", provider);
+  if (process.env.STT_PROVIDER === "mock") return mockStt;
+  const key = getElevenLabsApiKey();
+  if (key) return createElevenLabsStt(key);
   return mockStt;
+}
+
+/** Whether real speech-to-text (ElevenLabs) is active. */
+export function isElevenLabsConfigured(): boolean {
+  return process.env.STT_PROVIDER !== "mock" && getElevenLabsApiKey() !== null;
 }
 
 export function getLlm(): LlmProvider {
@@ -42,8 +55,9 @@ export function isAnthropicConfigured(): boolean {
 }
 
 export function getEmbeddings(): EmbeddingsProvider {
-  const provider = process.env.EMBEDDINGS_PROVIDER ?? "mock";
-  if (provider !== "mock") warnFallback("embeddings", provider);
+  if (process.env.EMBEDDINGS_PROVIDER === "mock") return mockEmbeddings;
+  const key = getOpenAiApiKey();
+  if (key) return createOpenAiEmbeddings(key);
   return mockEmbeddings;
 }
 
