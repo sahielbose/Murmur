@@ -40,13 +40,15 @@ function ProviderRow({ label, name }: { label: string; name: string }) {
     <div className="flex items-center justify-between py-2 text-sm">
       <span className="text-fg">{label}</span>
       <span className="flex items-center gap-2">
-        <span className="font-mono text-xs text-fg-muted">{name}</span>
+        <span className="font-mono text-xs text-fg-muted">
+          {isMock ? "built-in" : name}
+        </span>
         <span
           className={`rounded-full px-2 py-0.5 text-xs ${
             isMock ? "bg-bg-subtle text-fg-muted" : "bg-fg text-bg"
           }`}
         >
-          {isMock ? "mock" : "live"}
+          {isMock ? "sample" : "live"}
         </span>
       </span>
     </div>
@@ -155,7 +157,7 @@ export default async function SettingsPage() {
 
         <Section
           title="Providers"
-          description="The active speech, language, embedding, and storage engines."
+          description="What each engine is using right now. 'sample' is the built-in, zero-key mode; connect a key above to switch that engine to 'live'."
         >
           <div className="divide-y divide-border">
             {providers.map((p) => (

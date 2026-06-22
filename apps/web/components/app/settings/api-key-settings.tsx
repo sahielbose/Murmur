@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ export function ApiKeySettings({
   successMessage: string;
 }) {
   const endpoint = `/api/settings/keys/${provider}`;
+  const router = useRouter();
   const [status, setStatus] = useState<Status | null>(null);
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
@@ -56,6 +58,8 @@ export function ApiKeySettings({
       }
       setKey("");
       setStatus(data);
+      // Re-render the server component so the Providers panel flips to "live".
+      router.refresh();
       toast.success(successMessage);
     } catch {
       toast.error("Could not validate the key. Check your connection.");
@@ -70,6 +74,7 @@ export function ApiKeySettings({
       const res = await fetch(endpoint, { method: "DELETE" });
       if (res.ok) {
         setStatus((await res.json()) as Status);
+        router.refresh();
         toast.success("Key removed.");
       }
     } finally {
